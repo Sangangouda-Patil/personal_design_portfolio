@@ -1,6 +1,6 @@
 import { ContactFormData } from "@/components/contact/ContactForm";
 
-export const submitContactForm = async (formData: ContactFormData) => {
+export const handleContactFormSubmission = async (formData: ContactFormData) => {
   try {
     // Example: Send form data to an API endpoint
     const response = await fetch('/api/contact', {
