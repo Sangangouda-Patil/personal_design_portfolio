@@ -7,11 +7,10 @@ interface FormButtonProps {
   type?: "button" | "submit" | "reset"
   onClick?: () => void
   children: ReactNode
-  variant?: "primary" | "secondary"
   className?: string
 }
 
-const FormButton = ({ type = "button", onClick, children, variant = "primary", className = "" }: FormButtonProps) => {
+const FormButton = ({ type = "button", onClick, children, className = "" }: FormButtonProps) => {
   return (
     <div className="gradient-border-container rounded-lg">
       <motion.button

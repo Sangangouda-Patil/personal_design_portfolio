@@ -259,7 +259,7 @@ const WorkSection: React.FC = () => {
   // Update the current index when the drag position changes
   useEffect(() => {
     setCurrentIndex(getCurrentIndex(-dragPosition))
-  }, [dragPosition, itemWidth, totalSlides])
+  }, [dragPosition, itemWidth, totalSlides, getCurrentIndex])
 
   // Function to update the slider position with requestAnimationFrame
   const updateSliderPosition = (position: number) => {
@@ -589,14 +589,14 @@ const WorkSection: React.FC = () => {
                             toggleLike(project.id)
                           }}
                           className="transition-transform active:scale-110"
-                          aria-label={likedProjects.includes(originalId) ? "Unlike" : "Like"}
+                          aria-label={likedProjects.includes(project.id) ? "Unlike" : "Like"}
                         >
                           <Heart
                             size={24}
                             className={`
                               transition-all duration-300 
                               ${
-                                likedProjects.includes(originalId)
+                                likedProjects.includes(project.id)
                                   ? "text-[#FFD700] fill-[#FFD700]"
                                   : "text-gray-400 hover:text-gray-200"
                               }
@@ -636,7 +636,7 @@ const WorkSection: React.FC = () => {
             {/* Gradient border container */}
             <div className="gradient-border-container rounded-full">
               <button className="bg-[#1a1a1a] text-white rounded-full py-5 px-10 flex items-center gap-4 hover:bg-[#2a2a2a] transition-colors text-xl">
-                <span className="font-semibold pl-1 xs:pl-2">SEE 'EM ALL</span>
+                <span className="font-semibold pl-1 xs:pl-2">SEE &apos;EM ALL</span>
                 <div className="bg-[#FFD700] rounded-full p-2 flex items-center justify-center">
                   <ArrowRight size={20} className="text-black" />
                 </div>

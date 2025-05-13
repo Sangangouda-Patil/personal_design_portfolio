@@ -81,12 +81,6 @@ const highlightedProjects = [
 const DiscoverWork: React.FC = () => {
   // Add state for current card index
   const [currentIndex, setCurrentIndex] = useState(0)
-  // Track direction of animation (1 for right/next, -1 for left/previous)
-  const [direction, setDirection] = useState(0)
-  // Track if we're in mobile view
-  const [isMobile, setIsMobile] = useState(false)
-  // Track if we're dragging
-  const [isDragging, setIsDragging] = useState(false)
   // Track drag start position
   const [dragStartX, setDragStartX] = useState(0)
   // Track current drag position
@@ -100,11 +94,39 @@ const DiscoverWork: React.FC = () => {
   // Track if animation is in progress
   const [isAnimating, setIsAnimating] = useState(false)
 
+  // Add navigation functions
+  const goToPrevious = () => {
+    if (isAnimating) return
+    setIsAnimating(true)
+    setCurrentIndex((prev) => (prev === 0 ? highlightedProjects.length - 1 : prev - 1))
+    setTimeout(() => setIsAnimating(false), 700)
+  }
+
+  const goToNext = () => {
+    if (isAnimating) return
+    setIsAnimating(true)
+    setCurrentIndex((prev) => (prev === highlightedProjects.length - 1 ? 0 : prev + 1))
+    setTimeout(() => setIsAnimating(false), 700)
+  }
+
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        goToPrevious()
+      } else if (e.key === "ArrowRight") {
+        goToNext()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [goToNext, goToPrevious])
+
   // Update mobile state based on window size
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
-      setIsMobile(width < 768)
       setWindowWidth(width)
       if (carouselRef.current) {
         setCarouselWidth(carouselRef.current.offsetWidth)
@@ -121,41 +143,10 @@ const DiscoverWork: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Add keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        goToPrevious()
-      } else if (e.key === "ArrowRight") {
-        goToNext()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isAnimating]) // Only re-add when isAnimating changes
-
-  // Add navigation functions
-  const goToPrevious = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    setDirection(-1) // Set direction to left
-    setCurrentIndex((prev) => (prev === 0 ? highlightedProjects.length - 1 : prev - 1))
-    setTimeout(() => setIsAnimating(false), 700)
-  }
-
-  const goToNext = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    setDirection(1) // Set direction to right
-    setCurrentIndex((prev) => (prev === highlightedProjects.length - 1 ? 0 : prev + 1))
-    setTimeout(() => setIsAnimating(false), 700)
-  }
-
   // Handle mouse down for dragging
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isAnimating) return
-    setIsDragging(true)
+    setIsAnimating(true)
     setDragStartX(e.clientX)
     setDragX(0)
   }
@@ -163,29 +154,29 @@ const DiscoverWork: React.FC = () => {
   // Handle touch start for dragging on mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isAnimating) return
-    setIsDragging(true)
+    setIsAnimating(true)
     setDragStartX(e.touches[0].clientX)
     setDragX(0)
   }
 
   // Handle mouse move for dragging
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return
+    if (!isAnimating) return
     const deltaX = e.clientX - dragStartX
     setDragX(deltaX)
   }
 
   // Handle touch move for dragging on mobile
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return
+    if (!isAnimating) return
     const deltaX = e.touches[0].clientX - dragStartX
     setDragX(deltaX)
   }
 
   // Handle mouse up to end dragging
   const handleMouseUp = () => {
-    if (!isDragging) return
-    setIsDragging(false)
+    if (!isAnimating) return
+    setIsAnimating(false)
 
     // If dragged more than 100px or 20% of carousel width, navigate
     const threshold = Math.min(100, carouselWidth * 0.2)
@@ -239,7 +230,7 @@ const DiscoverWork: React.FC = () => {
         zIndex: 10,
         opacity: 1,
         scale: 1,
-        x: isDragging ? dragX : 0,
+        x: isAnimating ? dragX : 0,
         filter: "blur(0px)",
         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
       }
@@ -248,7 +239,7 @@ const DiscoverWork: React.FC = () => {
         zIndex: 5,
         opacity: 0.08,
         scale: 0.8,
-        x: isDragging ? -sideCardOffset + dragX : -sideCardOffset,
+        x: isAnimating ? -sideCardOffset + dragX : -sideCardOffset,
         filter: "blur(4px)",
       }
     } else if (index === nextIndex) {
@@ -256,7 +247,7 @@ const DiscoverWork: React.FC = () => {
         zIndex: 5,
         opacity: 0.08,
         scale: 0.8,
-        x: isDragging ? sideCardOffset + dragX : sideCardOffset,
+        x: isAnimating ? sideCardOffset + dragX : sideCardOffset,
         filter: "blur(4px)",
       }
     } else {
@@ -316,7 +307,7 @@ const DiscoverWork: React.FC = () => {
           onTouchEnd={handleTouchEnd}
           style={{
             height: getCardHeight(),
-            cursor: isDragging ? "grabbing" : "grab",
+            cursor: isAnimating ? "grabbing" : "grab",
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">

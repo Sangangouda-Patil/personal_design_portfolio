@@ -3,7 +3,6 @@
 import { motion } from "framer-motion"
 import { Rubik } from "next/font/google"
 import Image from "next/image"
-import { useEffect } from "react"
 
 // Load Rubik font with bold weight
 const rubik = Rubik({
@@ -22,13 +21,6 @@ const brands = Array.from({ length: 13 }, (_, index) => ({
 const extendedBrands = [...brands, ...brands, ...brands]
 
 const BrandsSection = () => {
-  useEffect(() => {
-    console.log(
-      "Brand logos being used:",
-      brands.map((b) => b.logo),
-    )
-  }, [])
-
   return (
     <section id="brands" className="py-20 bg-[#0a0a0a] overflow-hidden relative">
       {/* Subtle gradient overlay */}
@@ -51,7 +43,7 @@ const BrandsSection = () => {
             className="w-1 bg-[#FFD700] mr-3 sm:mr-4"
           ></motion.div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl">
-            <span className={`${rubik.className} font-bold text-white`}>BRANDS I'VE</span>
+            <span className={`${rubik.className} font-bold text-white`}>BRANDS I&apos;VE</span>
             <br />
             <span className={`${rubik.className} font-bold text-white`}>PARTNERED</span>
             <span className="text-[#FFD700] font-bold font-times italic"> WITH </span>

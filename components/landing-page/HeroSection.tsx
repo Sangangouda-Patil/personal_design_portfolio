@@ -21,20 +21,19 @@ const rubik = Rubik({
 const HeroSection = () => {
   // State to track viewport size
   const [isMobile, setIsMobile] = useState(false)
-  const [isTablet, setIsTablet] = useState(false)
-  const [isLargeScreen, setIsLargeScreen] = useState(false)
   const [isUltraWideScreen, setIsUltraWideScreen] = useState(false)
 
   // Refs for positioning
   const creativeRef = useRef<HTMLHeadingElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // State to track when the logo and landing page are loaded
+  const [isPageReady, setIsPageReady] = useState(false)
+
   // Update state based on window size
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640)
-      setIsTablet(window.innerWidth >= 640 && window.innerWidth < 1024)
-      setIsLargeScreen(window.innerWidth >= 1024)
       setIsUltraWideScreen(window.innerWidth >= 1920)
     }
 
@@ -46,6 +45,15 @@ const HeroSection = () => {
 
     // Cleanup
     return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  useEffect(() => {
+    // Simulate logo and landing page load
+    const timer = setTimeout(() => {
+      setIsPageReady(true)
+    }, 5000) // Updated delay to 5 seconds
+
+    return () => clearTimeout(timer)
   }, [])
 
   return (
@@ -61,8 +69,8 @@ const HeroSection = () => {
           <div className="relative">
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
+              animate={{ opacity: isPageReady ? 1 : 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="mb-4 text-center relative z-0 w-full"
             >
               <h1
@@ -137,8 +145,8 @@ const HeroSection = () => {
           <motion.div
             className="absolute top-[50%] sm:top-[55%] md:top-[58%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] xs:w-[400px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[800px] 2xl:w-[900px] 3xl:w-[1000px] z-10"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            animate={{ opacity: isPageReady ? 1 : 0 }}
+            transition={{ duration: 1, delay: 2, ease: "bounceOut" }}
           >
             <div className="w-full aspect-[3/4] overflow-hidden relative">
               <Image

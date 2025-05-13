@@ -84,31 +84,30 @@ const AboutSection = () => {
     // If section just came into view
     if (isInView) {
       // Reset animation states
-      setAnimateLetters(Array(totalChars).fill(false))
+      setAnimateLetters(Array(totalChars).fill(false));
 
       // Animate all letters with sequential delay
-      const charIndex = 0
       const animationTimer = setTimeout(() => {
         const animateNextLetter = (index: number) => {
-          if (index >= totalChars) return
+          if (index >= totalChars) return;
 
           setAnimateLetters((prev) => {
-            const newState = [...prev]
-            newState[index] = true
-            return newState
-          })
+            const newState = [...prev];
+            newState[index] = true;
+            return newState;
+          });
 
-          setTimeout(() => animateNextLetter(index + 1), 50) // 50ms delay between each letter
-        }
+          setTimeout(() => animateNextLetter(index + 1), 50); // 50ms delay between each letter
+        };
 
-        animateNextLetter(0)
-      }, 300) // Initial delay before animation starts
+        animateNextLetter(0);
+      }, 300); // Initial delay before animation starts
 
       return () => {
-        clearTimeout(animationTimer)
-      }
+        clearTimeout(animationTimer);
+      };
     }
-  }, [isInView, totalChars])
+  }, [isInView, totalChars]);
 
   // Update rotation based on mouse position
   useEffect(() => {
@@ -352,7 +351,7 @@ const AboutSection = () => {
                     <div className="absolute inset-0 rounded-lg overflow-hidden">
                       <Image
                         src="/images/aboutimage.webp"
-                        alt="Profile"
+                        alt="ABout-Image"
                         fill
                         className="object-cover"
                         style={{ transform: "translateZ(2px)" }}

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { Instagram, Twitter, Github, Linkedin, Figma } from "lucide-react"
+import { Instagram, Twitter, Github, Linkedin } from "lucide-react"
 import { FaBehance } from "react-icons/fa"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -90,7 +90,7 @@ const ContactSection = () => {
                 onClick={navigateToContactForm}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-bold text-white pr-2 sm:pr-4">
-                  Together, Let's Turn Your Vision Into Reality
+                  Together, Let&apos;s Turn Your Vision Into Reality
                 </h3>
                 <span className="text-white text-lg sm:text-xl">→</span>
               </motion.div>

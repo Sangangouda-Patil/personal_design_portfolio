@@ -224,7 +224,7 @@ const TestimonialsSection = () => {
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
                 <div className="bg-[#111111] rounded-3xl p-6 h-full relative">
-                  <p className="text-white text-base mb-12 font-times italic">"{testimonials[currentIndex].quote}"</p>
+                  <p className="text-white text-base mb-12 font-times italic">&quot;{testimonials[currentIndex].quote}&quot;</p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">
@@ -273,7 +273,7 @@ const TestimonialsSection = () => {
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
                 <div className="bg-[#111111] rounded-3xl p-8 h-full relative">
-                  <p className="text-white text-lg mb-12 font-times italic">"{testimonials[prevIndex].quote}"</p>
+                  <p className="text-white text-lg mb-12 font-times italic">&quot;{testimonials[prevIndex].quote}&quot;</p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">
@@ -316,7 +316,7 @@ const TestimonialsSection = () => {
                   {/* Gradient border container */}
                   <div className="gradient-border-container rounded-3xl p-[2px]">
                     <div className="bg-[#111111] rounded-3xl p-8 h-full relative">
-                      <p className="text-white text-lg mb-12 font-times italic">"{testimonials[currentIndex].quote}"</p>
+                      <p className="text-white text-lg mb-12 font-times italic">&quot;{testimonials[currentIndex].quote}&quot;</p>
 
                       {/* Bottom section with avatar and info */}
                       <div className="flex items-center mt-4 mb-2">
@@ -362,7 +362,7 @@ const TestimonialsSection = () => {
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
                 <div className="bg-[#111111] rounded-3xl p-8 h-full relative">
-                  <p className="text-white text-lg mb-12 font-times italic">"{testimonials[nextIndex].quote}"</p>
+                  <p className="text-white text-lg mb-12 font-times italic">&quot;{testimonials[nextIndex].quote}&quot;</p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">

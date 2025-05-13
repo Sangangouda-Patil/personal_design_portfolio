@@ -58,7 +58,7 @@ const useDragSlider = (initialProjectsLength: number, speedFactor = 0.3) => {
   };
 
   // Function to handle mouse up
-  const handleMouseUp = (e: React.MouseEvent) => {
+  const handleMouseUp = () => {
     if (!isDragging) return;
 
     setIsDragging(false);
@@ -67,14 +67,12 @@ const useDragSlider = (initialProjectsLength: number, speedFactor = 0.3) => {
     if (innerSliderRef.current) {
       innerSliderRef.current.style.transition = "transform 0.3s ease-out"; // Smooth transition after drag
     }
-
-    e.preventDefault();
   };
 
   // Function to handle mouse leave (for better drag behavior)
-  const handleMouseLeave = (e: React.MouseEvent) => {
+  const handleMouseLeave = () => {
     if (isDragging) {
-      handleMouseUp(e);
+      handleMouseUp();
     }
   };
 
@@ -114,7 +112,7 @@ const useDragSlider = (initialProjectsLength: number, speedFactor = 0.3) => {
   };
 
   // Function to handle touch end
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = () => {
     if (!isDragging) return;
 
     setIsDragging(false);
