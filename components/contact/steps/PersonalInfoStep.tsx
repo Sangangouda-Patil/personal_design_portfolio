@@ -11,7 +11,7 @@ interface PersonalInfoStepProps {
   formData: ContactFormData
   updateFormData: (data: Partial<ContactFormData>) => void
   onNext: () => void
-}
+} //
 
 const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ formData, updateFormData, onNext }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

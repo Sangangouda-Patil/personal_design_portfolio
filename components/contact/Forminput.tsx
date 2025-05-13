@@ -12,7 +12,7 @@ interface FormInputProps {
   required?: boolean
   isTextarea?: boolean
   rows?: number
-}
+} // <-- This closing brace is missing in your code
 
 const FormInput = ({
   type,
