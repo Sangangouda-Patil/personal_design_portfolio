@@ -2,10 +2,10 @@
 
 import React from "react"
 import type { ChangeEvent } from "react"
-import FormInput from "@/components/contact/FormInput"
-import FormButton from "@/components/contact/FormButton"
-import type { ContactFormData } from "@/components/contact/ContactForm"
 import { motion } from "framer-motion"
+import FormInput from "../FormInput"
+import FormButton from "../FormButton"
+import type { ContactFormData } from "@/components/contact/ContactForm"
 
 interface PersonalInfoStepProps {
   formData: ContactFormData
@@ -14,7 +14,6 @@ interface PersonalInfoStepProps {
 }
 
 const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ formData, updateFormData, onNext }) => {
-  // Update the type to accept both HTMLInputElement and HTMLTextAreaElement
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     updateFormData({ [name]: value })
