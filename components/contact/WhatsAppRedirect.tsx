@@ -1,6 +1,8 @@
 "use client"
 
+import React from "react";
 import { motion } from "framer-motion"
+import type { ContactFormData } from "@/components/contact/ContactForm";
 
 // Custom WhatsApp icon component - same as used elsewhere
 const WhatsAppIcon = ({ size = 20, className = "" }) => {
@@ -23,7 +25,11 @@ const WhatsAppIcon = ({ size = 20, className = "" }) => {
   )
 }
 
-const WhatsAppRedirect = () => {
+interface WhatsAppRedirectProps {
+  formData: ContactFormData;
+}
+
+const WhatsAppRedirect: React.FC<WhatsAppRedirectProps> = ({ formData }) => {
   // Replace with your actual WhatsApp number
   const whatsappNumber = "918217672080"
 

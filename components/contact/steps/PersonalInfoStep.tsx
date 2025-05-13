@@ -1,20 +1,19 @@
 "use client"
 
-import type React from "react"
-
+import React from "react"
 import type { ChangeEvent } from "react"
-import FormInput from "../FormInput"  
-import FormButton from "../FormButton"
-import type { FormData } from "../ContactForm"
+import FormInput from "@/components/contact/FormInput"
+import FormButton from "@/components/contact/FormButton"
+import type { ContactFormData } from "@/components/contact/ContactForm"
 import { motion } from "framer-motion"
 
 interface PersonalInfoStepProps {
-  formData: FormData
-  updateFormData: (data: Partial<FormData>) => void
+  formData: ContactFormData
+  updateFormData: (data: Partial<ContactFormData>) => void
   onNext: () => void
 }
 
-const PersonalInfoStep = ({ formData, updateFormData, onNext }: PersonalInfoStepProps) => {
+const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ formData, updateFormData, onNext }) => {
   // Update the type to accept both HTMLInputElement and HTMLTextAreaElement
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
