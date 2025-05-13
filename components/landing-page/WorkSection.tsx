@@ -4,7 +4,7 @@ import type React from "react"
 import { motion } from "framer-motion"
 import { Rubik } from "next/font/google"
 import { Heart, Bookmark, ArrowRight } from "lucide-react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
 
 // Load Rubik font with bold weight
@@ -14,11 +14,6 @@ const rubik = Rubik({
 })
 
 const initialProjects = [
-  // {
-  //   id: 1,
-  //   title: "Ratan Tata Tribute",
-  //   image: "/worksection/img1.webp",
-  // },
   {
     id: 1,
     image: "/worksection/img1.webp",
@@ -120,7 +115,6 @@ const initialProjects = [
     title: "Project Twenty",
   },
 ]
-  
 
 const WorkSection: React.FC = () => {
   // State to track liked projects
@@ -137,12 +131,6 @@ const WorkSection: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false)
   // State for tracking the current drag position
   const [dragPosition, setDragPosition] = useState(0)
-  // State for tracking the start position of a drag
-  const [startPosition, setStartPosition] = useState(0)
-  // State for tracking the current slide index (for pagination)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  // State for tracking ultra-wide screens
-  const [isUltraWide, setIsUltraWide] = useState(false)
   // Ref for tracking the last touch/mouse position
   const lastPositionRef = useRef(0)
   // Ref for animation frame
@@ -155,23 +143,19 @@ const WorkSection: React.FC = () => {
 
   // Function to toggle like status
   const toggleLike = (projectId: number) => {
-    // Get the original project ID (mod by initialProjects.length)
-    const originalId = ((projectId - 1) % initialProjects.length) + 1
-
-    if (likedProjects.includes(originalId)) {
-      // Unlike: remove from liked array
-      setLikedProjects(likedProjects.filter((id) => id !== originalId))
-    } else {
-      // Like: add to liked array
-      setLikedProjects([...likedProjects, originalId])
-    }
+    setLikedProjects((prev) => {
+      if (prev.includes(projectId)) {
+        return prev.filter((id) => id !== projectId)
+      } else {
+        return [...prev, projectId]
+      }
+    })
   }
 
   // Calculate items per view based on screen width
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
-      setIsUltraWide(width >= 1920)
 
       if (width < 640) {
         setItemsPerView(1.5) // Show 1.5 cards on mobile for peek effect
@@ -215,12 +199,11 @@ const WorkSection: React.FC = () => {
 
     // Add resize observer for more accurate width tracking
     if (sliderRef.current) {
+      const currentRef = sliderRef.current
       const resizeObserver = new ResizeObserver(updateSliderWidth)
-      resizeObserver.observe(sliderRef.current)
+      resizeObserver.observe(currentRef)
       return () => {
-        if (sliderRef.current) {
-          resizeObserver.unobserve(sliderRef.current)
-        }
+        resizeObserver.unobserve(currentRef)
       }
     }
   }, [])
@@ -231,45 +214,18 @@ const WorkSection: React.FC = () => {
   // Calculate the total width of all items
   const totalWidth = circularProjects.length * itemWidth
 
-  // Calculate the number of visible slides
-  const totalSlides = Math.ceil(initialProjects.length / itemsPerView)
-
-  // Function to get the normalized position (for infinite scrolling)
-  const getNormalizedPosition = (position: number) => {
-    // The width of the original projects
-    const originalWidth = initialProjects.length * itemWidth
-
-    // Normalize the position to be within the original width
-    let normalizedPosition = position % originalWidth
-
-    // If the position is negative, add the original width
-    if (normalizedPosition < 0) {
-      normalizedPosition += originalWidth
-    }
-
-    return normalizedPosition
-  }
-
-  // Function to get the current index based on the position
-  const getCurrentIndex = (position: number) => {
-    const normalizedPosition = getNormalizedPosition(position)
-    return Math.floor(normalizedPosition / itemWidth / itemsPerView) % totalSlides
-  }
-
-  // Update the current index when the drag position changes
-  useEffect(() => {
-    setCurrentIndex(getCurrentIndex(-dragPosition))
-  }, [dragPosition, itemWidth, totalSlides, getCurrentIndex])
-
   // Function to update the slider position with requestAnimationFrame
-  const updateSliderPosition = (position: number) => {
-    if (innerSliderRef.current) {
-      innerSliderRef.current.style.transform = `translateX(${position + initialMargin}px)`
-    }
-  }
+  const updateSliderPosition = useCallback(
+    (position: number) => {
+      if (innerSliderRef.current) {
+        innerSliderRef.current.style.transform = `translateX(${position + initialMargin}px)`
+      }
+    },
+    [initialMargin],
+  )
 
   // Function to check if we need to loop and adjust position
-  const checkAndAdjustPosition = () => {
+  const checkAndAdjustPosition = useCallback(() => {
     if (!innerSliderRef.current) return
 
     // The width of one complete set of projects
@@ -289,7 +245,7 @@ const WorkSection: React.FC = () => {
       setDragPosition(newPosition)
       updateSliderPosition(newPosition)
     }
-  }
+  }, [dragPosition, itemWidth, updateSliderPosition])
 
   // Add a state to track if auto-scrolling is enabled
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
@@ -311,7 +267,6 @@ const WorkSection: React.FC = () => {
     }
 
     setIsDragging(true)
-    setStartPosition(e.clientX)
     lastPositionRef.current = e.clientX
     e.preventDefault()
   }
@@ -370,9 +325,32 @@ const WorkSection: React.FC = () => {
   }
 
   // Function to handle mouse leave
-  const handleMouseLeave = (e: React.MouseEvent) => {
+  const handleMouseLeave = () => {
     if (isDragging) {
-      handleMouseUp(e)
+      setIsDragging(false)
+
+      // Re-enable auto-scrolling after user interaction
+      setTimeout(() => {
+        setAutoScrollEnabled(true)
+      }, 5000)
+
+      // Cancel any ongoing animation
+      if (animationRef.current !== null) {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
+
+      // Add transition for smooth stop
+      if (innerSliderRef.current) {
+        innerSliderRef.current.style.transition = "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)"
+
+        // After transition completes, remove it and check if we need to loop
+        setTimeout(() => {
+          if (!innerSliderRef.current) return
+          innerSliderRef.current.style.transition = "none"
+          checkAndAdjustPosition()
+        }, 300)
+      }
     }
   }
 
@@ -396,7 +374,6 @@ const WorkSection: React.FC = () => {
 
     const touch = e.touches[0]
     setIsDragging(true)
-    setStartPosition(touch.clientX)
     lastPositionRef.current = touch.clientX
   }
 
@@ -421,7 +398,7 @@ const WorkSection: React.FC = () => {
   }
 
   // Function to handle touch end
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = () => {
     if (!isDragging) return
 
     setIsDragging(false)
@@ -481,12 +458,12 @@ const WorkSection: React.FC = () => {
           }, 800)
         }
       }
-    }, 3000) // 4 seconds interval
+    }, 3000) // 3 seconds interval
 
     return () => {
       clearInterval(autoScrollInterval)
     }
-  }, [isDragging, dragPosition, itemWidth, autoScrollEnabled])
+  }, [isDragging, dragPosition, itemWidth, autoScrollEnabled, updateSliderPosition, checkAndAdjustPosition])
 
   // Clean up animation frame on unmount
   useEffect(() => {
@@ -515,7 +492,7 @@ const WorkSection: React.FC = () => {
         }
       }, 300)
     }
-  }, [itemWidth, initialProjects.length])
+  }, [itemWidth, updateSliderPosition])
 
   return (
     <section id="work" className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
@@ -559,68 +536,63 @@ const WorkSection: React.FC = () => {
             transform: `translateX(${initialMargin}px)`,
           }}
         >
-          {circularProjects.map((project, index) => {
-            // Get the original project ID (mod by initialProjects.length)
-            const originalId = ((project.id - 1) % initialProjects.length) + 1
+          {circularProjects.map((project, index) => (
+            <div key={`${project.id}-${index}`} className="px-2 sm:px-3" style={{ width: `${itemWidth}px` }}>
+              {/* Gradient border container */}
+              <div className="gradient-border-container rounded-xl p-[2px]">
+                <motion.div className="bg-[#111111] rounded-xl overflow-hidden h-full">
+                  {/* Project Image - Instagram aspect ratio (4:5) */}
+                  <div className="w-full relative" style={{ paddingBottom: "125%" }}>
+                    <Image
+                      src={project.image || "/placeholder.svg"}
+                      alt={project.title}
+                      fill
+                      className="object-contain bg-[#111111]"
+                      sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw`}
+                    />
+                  </div>
 
-            return (
-              <div key={`${project.id}-${index}`} className="px-2 sm:px-3" style={{ width: `${itemWidth}px` }}>
-                {/* Gradient border container */}
-                <div className="gradient-border-container rounded-xl p-[2px]">
-                  <motion.div className="bg-[#111111] rounded-xl overflow-hidden h-full">
-                    {/* Project Image - Instagram aspect ratio (4:5) */}
-                    <div className="w-full relative" style={{ paddingBottom: "125%" }}>
-                      <Image
-                        src={project.image || "/placeholder.svg"}
-                        alt={project.title}
-                        fill
-                        className="object-contain bg-[#111111]"
-                        sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw`}
-                      />
+                  {/* Bottom section with icons and minimal text */}
+                  <div className="p-4">
+                    <div className="flex justify-between items-center">
+                      {/* Like Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleLike(project.id)
+                        }}
+                        className="transition-transform active:scale-110"
+                        aria-label={likedProjects.includes(project.id) ? "Unlike" : "Like"}
+                      >
+                        <Heart
+                          size={24}
+                          className={`
+                            transition-all duration-300 
+                            ${
+                              likedProjects.includes(project.id)
+                                ? "text-[#FFD700] fill-[#FFD700]"
+                                : "text-gray-400 hover:text-gray-200"
+                            }
+                          `}
+                        />
+                      </button>
+
+                      {/* Save Button */}
+                      <button
+                        className="text-gray-400 hover:text-gray-200 transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Bookmark size={24} />
+                      </button>
                     </div>
 
-                    {/* Bottom section with icons and minimal text */}
-                    <div className="p-4">
-                      <div className="flex justify-between items-center">
-                        {/* Like Button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            toggleLike(project.id)
-                          }}
-                          className="transition-transform active:scale-110"
-                          aria-label={likedProjects.includes(project.id) ? "Unlike" : "Like"}
-                        >
-                          <Heart
-                            size={24}
-                            className={`
-                              transition-all duration-300 
-                              ${
-                                likedProjects.includes(project.id)
-                                  ? "text-[#FFD700] fill-[#FFD700]"
-                                  : "text-gray-400 hover:text-gray-200"
-                              }
-                            `}
-                          />
-                        </button>
-
-                        {/* Save Button */}
-                        <button
-                          className="text-gray-400 hover:text-gray-200 transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Bookmark size={24} />
-                        </button>
-                      </div>
-
-                      {/* Minimal project title */}
-                      <p className="text-white text-sm mt-2">{project.title}</p>
-                    </div>
-                  </motion.div>
-                </div>
+                    {/* Minimal project title */}
+                    <p className="text-white text-sm mt-2">{project.title}</p>
+                  </div>
+                </motion.div>
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       </div>
 

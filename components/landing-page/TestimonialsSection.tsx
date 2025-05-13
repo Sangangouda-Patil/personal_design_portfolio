@@ -106,7 +106,7 @@ const TestimonialsSection = () => {
     (index: number) => {
       return ((index % testimonials.length) + testimonials.length) % testimonials.length
     },
-    [testimonials.length],
+    []
   )
 
   // Get previous and next indices with wrapping

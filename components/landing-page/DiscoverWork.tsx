@@ -1,10 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Rubik } from "next/font/google"
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { Rubik } from 'next/font/google'
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from "next/link"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import type React from "react"
 import Image from "next/image"
 
@@ -81,6 +81,8 @@ const highlightedProjects = [
 const DiscoverWork: React.FC = () => {
   // Add state for current card index
   const [currentIndex, setCurrentIndex] = useState(0)
+  // Track if we're dragging
+  const [isDragging, setIsDragging] = useState(false)
   // Track drag start position
   const [dragStartX, setDragStartX] = useState(0)
   // Track current drag position
@@ -92,22 +94,24 @@ const DiscoverWork: React.FC = () => {
   // Track window width
   const [windowWidth, setWindowWidth] = useState(0)
   // Track if animation is in progress
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(0)
 
   // Add navigation functions
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (isAnimating) return
-    setIsAnimating(true)
+    setIsAnimating(1)
     setCurrentIndex((prev) => (prev === 0 ? highlightedProjects.length - 1 : prev - 1))
-    setTimeout(() => setIsAnimating(false), 700)
-  }
+    // Reset animation flag after animation completes
+    setTimeout(() => setIsAnimating(0), 700) // Increased timeout to match longer animation
+  }, [isAnimating])
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (isAnimating) return
-    setIsAnimating(true)
+    setIsAnimating(1)
     setCurrentIndex((prev) => (prev === highlightedProjects.length - 1 ? 0 : prev + 1))
-    setTimeout(() => setIsAnimating(false), 700)
-  }
+    // Reset animation flag after animation completes
+    setTimeout(() => setIsAnimating(0), 700) // Increased timeout to match longer animation
+  }, [isAnimating])
 
   // Add keyboard navigation
   useEffect(() => {
@@ -121,7 +125,7 @@ const DiscoverWork: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [goToNext, goToPrevious])
+  }, [goToPrevious, goToNext])
 
   // Update mobile state based on window size
   useEffect(() => {
@@ -146,7 +150,7 @@ const DiscoverWork: React.FC = () => {
   // Handle mouse down for dragging
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isAnimating) return
-    setIsAnimating(true)
+    setIsDragging(true)
     setDragStartX(e.clientX)
     setDragX(0)
   }
@@ -154,29 +158,29 @@ const DiscoverWork: React.FC = () => {
   // Handle touch start for dragging on mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isAnimating) return
-    setIsAnimating(true)
+    setIsDragging(true)
     setDragStartX(e.touches[0].clientX)
     setDragX(0)
   }
 
   // Handle mouse move for dragging
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isAnimating) return
+    if (!isDragging) return
     const deltaX = e.clientX - dragStartX
     setDragX(deltaX)
   }
 
   // Handle touch move for dragging on mobile
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isAnimating) return
+    if (!isDragging) return
     const deltaX = e.touches[0].clientX - dragStartX
     setDragX(deltaX)
   }
 
   // Handle mouse up to end dragging
   const handleMouseUp = () => {
-    if (!isAnimating) return
-    setIsAnimating(false)
+    if (!isDragging) return
+    setIsDragging(false)
 
     // If dragged more than 100px or 20% of carousel width, navigate
     const threshold = Math.min(100, carouselWidth * 0.2)
@@ -230,7 +234,7 @@ const DiscoverWork: React.FC = () => {
         zIndex: 10,
         opacity: 1,
         scale: 1,
-        x: isAnimating ? dragX : 0,
+        x: isDragging ? dragX : 0,
         filter: "blur(0px)",
         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
       }
@@ -239,7 +243,7 @@ const DiscoverWork: React.FC = () => {
         zIndex: 5,
         opacity: 0.08,
         scale: 0.8,
-        x: isAnimating ? -sideCardOffset + dragX : -sideCardOffset,
+        x: isDragging ? -sideCardOffset + dragX : -sideCardOffset,
         filter: "blur(4px)",
       }
     } else if (index === nextIndex) {
@@ -247,7 +251,7 @@ const DiscoverWork: React.FC = () => {
         zIndex: 5,
         opacity: 0.08,
         scale: 0.8,
-        x: isAnimating ? sideCardOffset + dragX : sideCardOffset,
+        x: isDragging ? sideCardOffset + dragX : sideCardOffset,
         filter: "blur(4px)",
       }
     } else {
@@ -285,7 +289,7 @@ const DiscoverWork: React.FC = () => {
               viewport={{ once: true }}
               className="w-1 bg-[#FFD700] mr-3 sm:mr-4 sm:h-[35px] md:h-[40px]"
             ></motion.div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl">
               <span className={`${rubik.className} font-bold text-white`}>DISCOVER MY</span>
               <br />
               <span className={`${rubik.className} font-bold text-white`}>HIGHLIGHTED</span>
@@ -307,7 +311,7 @@ const DiscoverWork: React.FC = () => {
           onTouchEnd={handleTouchEnd}
           style={{
             height: getCardHeight(),
-            cursor: isAnimating ? "grabbing" : "grab",
+            cursor: isDragging ? "grabbing" : "grab",
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
@@ -410,10 +414,10 @@ const DiscoverWork: React.FC = () => {
             <ChevronRight size={20} />
           </motion.button>
         </div>
-        </div>
+      </div>
 
-        {/* View All Projects Button */}
-        <div className="section-container">
+      {/* View All Projects Button */}
+      <div className="section-container">
         <div className="flex justify-center mt-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -424,7 +428,7 @@ const DiscoverWork: React.FC = () => {
             {/* Gradient border container */}
             <div className="gradient-border-container rounded-full">
               <button className="bg-[#1a1a1a] text-white rounded-full py-5 px-10 flex items-center gap-4 hover:bg-[#2a2a2a] transition-colors text-xl">
-                <span className="font-semibold pl-1 xs:pl-2">SEE 'EM ALL</span>
+                <span className="font-semibold pl-1 xs:pl-2">SEE &apos;EM ALL</span>
                 <div className="bg-[#FFD700] rounded-full p-2 flex items-center justify-center">
                   <ArrowRight size={20} className="text-black" />
                 </div>
@@ -436,6 +440,5 @@ const DiscoverWork: React.FC = () => {
     </section>
   )
 }
-
 
 export default DiscoverWork
