@@ -90,13 +90,14 @@ const ContactSection = () => {
                 onClick={navigateToContactForm}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-bold text-white pr-2 sm:pr-4">
-                  Together, Let&apos;s Turn Your Vision Into Reality
+                  Together, Let's Turn Your Vision Into Reality
                 </h3>
                 <span className="text-white text-lg sm:text-xl">→</span>
               </motion.div>
             </div>
           </div>
         </div>
+
 
         {/* Second row */}
         <div className="grid grid-cols-12 gap-4 sm:gap-6">
