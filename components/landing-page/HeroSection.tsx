@@ -146,7 +146,7 @@ const HeroSection = () => {
             className="absolute top-[50%] sm:top-[55%] md:top-[58%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] xs:w-[400px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[800px] 2xl:w-[900px] 3xl:w-[1000px] z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: isPageReady ? 1 : 0 }}
-            transition={{ duration: 1, delay: 2, ease: "bounceOut" }}
+            transition={{ duration: 1, delay: 1.5, ease: "easein" }}
           >
             <div className="w-full aspect-[3/4] overflow-hidden relative">
               <Image

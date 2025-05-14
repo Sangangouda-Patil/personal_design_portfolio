@@ -3,8 +3,7 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { Instagram, Twitter, Github, Linkedin } from "lucide-react"
-import { FaBehance } from "react-icons/fa"
+import { Instagram, Twitter, Github, Linkedin, Figma } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Rubik } from "next/font/google"
@@ -51,7 +50,7 @@ const ContactSection = () => {
     const message = "Hello! I'd like to discuss a project with you."
     const encodedMessage = encodeURIComponent(message)
 
-    // Open WhatsApp with the number and message
+    // Open WhatsApp with the number and message and message
     window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank")
   }
 
@@ -73,8 +72,8 @@ const ContactSection = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="relative w-14 sm:w-16 h-14 sm:h-16 flex items-center justify-center">
-                  <Image src="/images/logo/logo.webp" alt="Logo" width={74} height={74} className="object-contain" />
+                <div className="flex items-center justify-center w-full h-full">
+                  <Image src="/icons/logo.webp" alt="Logo" width={70} height={70} className="object-contain" />
                 </div>
               </motion.div>
             </div>
@@ -90,14 +89,13 @@ const ContactSection = () => {
                 onClick={navigateToContactForm}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-bold text-white pr-2 sm:pr-4">
-                  Together, Let's Turn Your Vision Into Reality
+                  Together, Let&apos;s Turn Your Vision Into Reality
                 </h3>
                 <span className="text-white text-lg sm:text-xl">→</span>
               </motion.div>
             </div>
           </div>
         </div>
-
 
         {/* Second row */}
         <div className="grid grid-cols-12 gap-4 sm:gap-6">
@@ -145,7 +143,7 @@ const ContactSection = () => {
               >
                 <div className="flex flex-wrap justify-center gap-4 sm:gap-5">
                   {/* Instagram */}
-                  <Link href="https://www.instagram.com/mr_sp_09/" target="_blank" aria-label="Instagram">
+                  <Link href="https://instagram.com" target="_blank" aria-label="Instagram">
                     <motion.div
                       whileHover={{ scale: 1.15, y: -3 }}
                       whileTap={{ scale: 0.95 }}
@@ -183,7 +181,7 @@ const ContactSection = () => {
                   </Link>
 
                   {/* GitHub */}
-                  <Link href="https://github.com/Sangangouda-Patil" target="_blank" aria-label="GitHub">
+                  <Link href="https://github.com" target="_blank" aria-label="GitHub">
                     <motion.div
                       whileHover={{ scale: 1.15, y: -3 }}
                       whileTap={{ scale: 0.95 }}
@@ -202,7 +200,7 @@ const ContactSection = () => {
                   </Link>
 
                   {/* LinkedIn */}
-                  <Link href="https://www.linkedin.com/in/sangangouda-patil/" target="_blank" aria-label="LinkedIn">
+                  <Link href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
                     <motion.div
                       whileHover={{ scale: 1.15, y: -3 }}
                       whileTap={{ scale: 0.95 }}
@@ -220,8 +218,8 @@ const ContactSection = () => {
                     </motion.div>
                   </Link>
 
-                  {/* Behance */}
-                  <Link href="https://www.behance.net/sangangpatil" target="_blank" aria-label="Behance">
+                  {/* Figma */}
+                  <Link href="https://behance.net" target="_blank" aria-label="Behance">
                     <motion.div
                       whileHover={{ scale: 1.15, y: -3 }}
                       whileTap={{ scale: 0.95 }}
@@ -231,7 +229,7 @@ const ContactSection = () => {
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/30 via-white/20 to-white/10 p-[1.5px]"></div>
                       {/* Icon container */}
                       <div className="absolute inset-0 m-[1.5px] rounded-full bg-[#1a1a1a] flex items-center justify-center">
-                        <FaBehance
+                        <Figma
                           size={16}
                           className="text-white group-hover:text-white transition-colors sm:size-[18px]"
                         />
