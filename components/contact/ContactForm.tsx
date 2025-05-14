@@ -111,7 +111,7 @@ const FormButton = ({
       <motion.button
         type={type}
         onClick={onClick}
-        className={`w-full px-4 py-3 bg-[#1a1a1a] text-white rounded-lg font-medium transition-colors hover:bg-[#222222] ${className}`}
+        className={`w-full px-4 py-3 ${variant === "primary" ? "bg-[#1a1a1a]" : "bg-[#111111]"} text-white rounded-lg font-medium transition-colors hover:bg-[#222222] ${className}`}
         whileHover={disabled ? {} : { scale: 1.02 }}
         whileTap={disabled ? {} : { scale: 0.98 }}
         disabled={disabled}
