@@ -10,6 +10,7 @@ import WorkSection from "@/components/landing-page/WorkSection"
 import ShatterSection from "@/components/landing-page/ShatterSection"
 import DiscoverWork from "@/components/landing-page/DiscoverWork"
 import TestimonialsSection from "@/components/landing-page/TestimonialsSection"
+import EducationCareerSection from "@/components/landing-page/EducationCareerSection"
 import ContactSection from "@/components/landing-page/ContactSection"
 import InfiniteSlider from "@/components/landing-page/InfiniteSlider"
 import Footer from "@/components/shared/Footer"
@@ -26,6 +27,7 @@ export default function LandingPage() {
       <ShatterSection />
       <DiscoverWork />
       <TestimonialsSection />
+      <EducationCareerSection />
       <InfiniteSlider />
       <ContactSection />
       <Footer />

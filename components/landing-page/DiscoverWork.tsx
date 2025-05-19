@@ -1,12 +1,18 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Rubik } from 'next/font/google'
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from "next/link"
+import { Rubik } from "next/font/google"
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import type React from "react"
 import Image from "next/image"
+import ShinyText from "../shared/ShinyText"
+
+// Add these keyframe animations for text effects
+const textRevealAnimation = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 },
+}
 
 // Load Rubik font with bold weight
 const rubik = Rubik({
@@ -18,63 +24,58 @@ const rubik = Rubik({
 const highlightedProjects = [
   {
     id: 1,
-    client: "DESIGN SYSTEM",
-    title: "UI/UX Design System : Created a comprehensive component library",
-    category: "App & Web",
-    year: "2024",
-    description:
-      "An intuitive design system that increased development speed by 40% and improved UI consistency across platforms",
-    tags: ["UI/UX", "Design System", "Figma"],
-    image: "/discoverworksection/img1.webp",
-    link: "/work/design-system",
+    client: "CommunionHub",
+    title: "UI, UX & Development",
+    category: "WEB & MOBILE",
+    year: "2025",
+    slug: "https://communion-hub-fxry.vercel.app/",
+    // The image property is ready for you to add your own images
+    image: "/discoverworksection/img1.webp", // You'll add your own image path here
   },
   {
     id: 2,
-    client: "E-COMMERCE",
-    title: "Shopify Redesign : Transformed user experience for higher conversions",
-    category: "Web Design",
-    year: "2023",
-    description:
-      "A complete redesign that boosted conversion rates by 35% and reduced cart abandonment for this premium fashion retailer",
-    tags: ["Web Design", "E-commerce", "Shopify"],
-    image: "/discoverworksection/img2.webp",
-    link: "/work/ecommerce",
+    client: "Creatorships",
+    title: "UI, UX & Branding",
+    category: "WEB",
+    year: "2024",
+    image: "/discoverworksection/img2.webp", // You'll add your own image path here
+    slug: "https://creatorships.vercel.app/",
   },
   {
     id: 3,
-    client: "HEALTH APP",
-    title: "Wellness Tracker : Reimagined health monitoring for everyday users",
-    category: "Mobile App",
-    year: "2023",
-    description:
-      "An intuitive mobile interface that increased user engagement by 62% and session duration for this health tech startup",
-    tags: ["Mobile", "UI Design", "React Native"],
-    image: "/discoverworksection/img3.webp",
-    link: "/work/mobile-app",
+    client: "Bobo Food Delivery App",
+    title: "Design System",
+    category: "Coming Soon",
+    year: "2025",
+    image: "/discoverworksection/img6.webp",
+    slug: ""
   },
   {
     id: 4,
-    client: "TECH STARTUP",
-    title: "Brand Identity : Created distinctive visual language for new venture",
-    category: "Branding",
-    year: "2024",
-    description:
-      "A comprehensive brand identity that helped secure Series A funding and market recognition for this innovative AI platform",
-    tags: ["Branding", "Identity", "Logo Design"],
-    image: "/discoverworksection/img4.webp",
-    link: "/work/brand-identity",
+    client: "AM internationa",
+    title: "UI, UX",
+    category: "Landing Page",
+    year: "2023",
+    image: "/discoverworksection/img4.webp", // You'll add your own image path here
+    slug: "https://aminternational.sg/",
   },
   {
     id: 5,
-    client: "SAAS PLATFORM",
-    title: "Analytics Dashboard : Visualized complex data for quick insights",
-    category: "UI Design",
+    client: "BabyMD",
+    title: "UI, UX",
+    category: "Coming Soon",
+    year: "2025",
+    image: "/discoverworksection/img5.webp", // You'll add your own image path here
+    slug: "https://babymd.in/",
+  },
+  {
+    id: 6,
+    client: "DesignFLow",
+    title: "UI, UX",
+    category: "Landing Page",
     year: "2023",
-    description:
-      "A data visualization dashboard that reduced decision-making time by 45% for enterprise users of this B2B analytics tool",
-    tags: ["Dashboard", "Data Viz", "UI Design"],
-    image: "/discoverworksection/img5.webp",
-    link: "/work/dashboard",
+    image: "/discoverworksection/img3.webp", // You'll add your own image path here
+    slug: "https://www.figma.com/proto/qraBc63gpJ8WYilKdrPLrB/Design-Flow-Landing-Page?page-id=271%3A502&node-id=271-1346&viewport=460%2C65%2C0.15&t=6Fkk5TddC4f3S6eO-1&scaling=min-zoom&content-scaling=fixed",
   },
 ]
 
@@ -94,23 +95,21 @@ const DiscoverWork: React.FC = () => {
   // Track window width
   const [windowWidth, setWindowWidth] = useState(0)
   // Track if animation is in progress
-  const [isAnimating, setIsAnimating] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
 
   // Add navigation functions
   const goToPrevious = useCallback(() => {
     if (isAnimating) return
-    setIsAnimating(1)
+    setIsAnimating(true)
     setCurrentIndex((prev) => (prev === 0 ? highlightedProjects.length - 1 : prev - 1))
-    // Reset animation flag after animation completes
-    setTimeout(() => setIsAnimating(0), 700) // Increased timeout to match longer animation
+    setTimeout(() => setIsAnimating(false), 700)
   }, [isAnimating])
 
   const goToNext = useCallback(() => {
     if (isAnimating) return
-    setIsAnimating(1)
+    setIsAnimating(true)
     setCurrentIndex((prev) => (prev === highlightedProjects.length - 1 ? 0 : prev + 1))
-    // Reset animation flag after animation completes
-    setTimeout(() => setIsAnimating(0), 700) // Increased timeout to match longer animation
+    setTimeout(() => setIsAnimating(false), 700)
   }, [isAnimating])
 
   // Add keyboard navigation
@@ -223,11 +222,12 @@ const DiscoverWork: React.FC = () => {
   const getCardStyle = (index: number) => {
     // Calculate how much of the adjacent cards should be visible
     // On larger screens, show more of the adjacent cards
-    const visibleWidth = windowWidth >= 1920 ? 0.1 : windowWidth >= 1280 ? 0.08 : 0.05
+    const visibleWidth = windowWidth >= 1920 ? 0.25 : windowWidth >= 1280 ? 0.2 : 0.15
 
     // Calculate the offset for adjacent cards
     // This ensures they're partially visible at the edges
-    const sideCardOffset = carouselWidth * (0.5 - visibleWidth)
+    // Reduced offset to make adjacent cards more visible
+    const sideCardOffset = carouselWidth * (0.4 - visibleWidth)
 
     if (index === currentIndex) {
       return {
@@ -236,71 +236,108 @@ const DiscoverWork: React.FC = () => {
         scale: 1,
         x: isDragging ? dragX : 0,
         filter: "blur(0px)",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
+        transition: {
+          scale: {
+            duration: 0.3,
+          },
+        },
       }
     } else if (index === prevIndex) {
       return {
         zIndex: 5,
-        opacity: 0.08,
-        scale: 0.8,
+        opacity: 0.1, // Slightly increased opacity
+        scale: 0.85, // Slightly larger scale
         x: isDragging ? -sideCardOffset + dragX : -sideCardOffset,
-        filter: "blur(4px)",
+        filter: "blur(3px)", // Slightly less blur
       }
     } else if (index === nextIndex) {
       return {
         zIndex: 5,
-        opacity: 0.08,
-        scale: 0.8,
+        opacity: 0.1, // Slightly increased opacity
+        scale: 0.85, // Slightly larger scale
         x: isDragging ? sideCardOffset + dragX : sideCardOffset,
-        filter: "blur(4px)",
+        filter: "blur(3px)", // Slightly less blur
       }
     } else {
       return {
         zIndex: 1,
         opacity: 0,
-        scale: 0.7,
+        scale: 0.75, // Slightly larger scale
         x: index < currentIndex ? -carouselWidth * 1.5 : carouselWidth * 1.5,
         filter: "blur(6px)",
       }
     }
   }
 
-  // Calculate card height based on screen size
-  const getCardHeight = () => {
-    if (windowWidth < 640) {
-      return "450px" // Smaller height for mobile
+  // Calculate card width based on screen size - IMPROVED RESPONSIVENESS
+  const getCardWidth = () => {
+    if (windowWidth < 375) {
+      return "260px" // Smaller for very small devices
+    } else if (windowWidth < 480) {
+      return "320px" // Small mobile
+    } else if (windowWidth < 640) {
+      return "340px" // Mobile
     } else if (windowWidth < 768) {
-      return "500px" // Medium height for small tablets
+      return "380px" // Large mobile
+    } else if (windowWidth < 1024) {
+      return "420px" // Tablet
+    } else if (windowWidth < 1280) {
+      return "480px" // Small desktop
+    } else if (windowWidth < 1536) {
+      return "520px" // Desktop
     } else {
-      return "550px" // Default height for larger screens
+      return "550px" // Large desktop
     }
   }
 
+  // Calculate image height to maintain aspect ratio - IMPROVED RESPONSIVENESS
+  const getImageHeight = () => {
+    const cardWidth = Number.parseInt(getCardWidth().replace("px", ""))
+    // Maintain a 4:3 aspect ratio for the image
+    const baseHeight = Math.round((cardWidth / 4) * 3)
+
+    // Ensure minimum height on very small screens
+    if (windowWidth < 375) {
+      return Math.max(baseHeight, 210) + "px"
+    } else if (windowWidth < 480) {
+      return Math.max(baseHeight, 240) + "px"
+    } else if (windowWidth < 640) {
+      return Math.max(baseHeight, 260) + "px"
+    } else if (windowWidth < 768) {
+      return Math.max(baseHeight, 280) + "px"
+    } else if (windowWidth < 1024) {
+      return Math.max(baseHeight, 300) + "px"
+    } else {
+      return Math.max(baseHeight, 340) + "px"
+    }
+  }
+
+  // Calculate card container height based on content - IMPROVED RESPONSIVENESS
+  const getCardContainerHeight = () => {
+    const imageHeight = Number.parseInt(getImageHeight().replace("px", ""))
+    // Add space for text content and padding - adjust for different screen sizes
+    const textContentHeight =
+      windowWidth < 480 ? 180 : windowWidth < 640 ? 200 : windowWidth < 768 ? 220 : windowWidth < 1024 ? 230 : 250
+    return imageHeight + textContentHeight + "px"
+  }
+
   return (
-    <section className="py-20 bg-[#0a0a0a] relative">
+    <section className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] relative">
       <div className="section-container">
-        {/* Section Header with yellow accent */}
-        <div className="flex items-start mb-8 sm:mb-10 md:mb-12">
-          <div className="flex items-start mb-6 sm:mb-0">
-            <motion.div
-              initial={{ height: 0 }}
-              whileInView={{ height: "80px" }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="w-1 bg-[#FFD700] mr-3 sm:mr-4 sm:h-[35px] md:h-[40px]"
-            ></motion.div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl">
-              <span className={`${rubik.className} font-bold text-white`}>DISCOVER MY</span>
-              <br />
-              <span className={`${rubik.className} font-bold text-white`}>HIGHLIGHTED</span>
-              <span className="text-[#FFD700] font-bold font-times italic"> WORK </span>
-            </h2>
-          </div>
+       {/* Centered Section Header with ShinyText effect */}
+       <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+          <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
+            <span className={`font-rubik-bold text-white`}>
+              <ShinyText text="Featured" speed={3} className={`font-rubik-bold`} />
+            </span>
+            <span className="text-[#FFD700] font-bold font-times italic"> Work</span>
+          </h2>
         </div>
+      
 
         {/* Projects carousel with visible adjacent cards - full width container */}
         <div
-          className="relative overflow-hidden w-full"
+          className="relative overflow-hidden w-full mt-10 sm:mt-20 md:mt-30"
           ref={carouselRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -310,7 +347,7 @@ const DiscoverWork: React.FC = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           style={{
-            height: getCardHeight(),
+            height: getCardContainerHeight(),
             cursor: isDragging ? "grabbing" : "grab",
           }}
         >
@@ -318,7 +355,8 @@ const DiscoverWork: React.FC = () => {
             {highlightedProjects.map((project, index) => (
               <motion.div
                 key={project.id}
-                className="absolute w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] xl:max-w-[80%]"
+                className="absolute group cursor-pointer"
+                style={{ width: getCardWidth() }}
                 initial={false}
                 animate={getCardStyle(index)}
                 transition={{
@@ -326,64 +364,82 @@ const DiscoverWork: React.FC = () => {
                   ...fadeTransition,
                 }}
               >
-                {/* Project card with gradient border */}
-                <div className="gradient-border-container rounded-2xl p-[2px]">
-                  <div className="bg-[#161616] rounded-2xl overflow-hidden h-full shadow-lg">
-                    {/* Card layout - horizontal layout on md+ screens, vertical on smaller screens */}
-                    <div className="flex flex-col md:flex-row h-full">
-                      {/* Left side - Image placeholder */}
-                      <div className="w-full md:w-1/2 bg-[#1a1a1a] relative overflow-hidden min-h-[180px] xs:min-h-[200px] sm:min-h-[220px] md:min-h-0">
+                {/* Card with enhanced styling and gradient border */}
+                <div className="overflow-hidden rounded-2xl sm:rounded-3xl flex flex-col relative h-full">
+                  {/* Gradient border */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/10 to-transparent rounded-2xl sm:rounded-3xl p-[1px]"></div>
+                  <div className="relative z-10 flex flex-col w-full h-full bg-[#111111] rounded-2xl sm:rounded-3xl overflow-hidden">
+                    {/* Image placeholder area with gradient and hover effect */}
+                    <div
+                      className="w-full rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden transition-all duration-500"
+                      style={{
+                        height: getImageHeight(),
+                        background: project.image ? "transparent" : "linear-gradient(135deg, #111111 0%, #333333 100%)",
+                      }}
+                    >
+                      {project.image ? (
                         <Image
                           src={project.image || "/placeholder.svg"}
-                          alt={project.title}
+                          alt={project.client}
                           fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                          className="object-cover"
+                          className="object-cover rounded-t-2xl sm:rounded-t-3xl transition-transform duration-700 hover:scale-105"
                         />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-white/30 text-base sm:text-lg font-rubik">Project Preview</span>
+                        </div>
+                      )}
+
+                      {/* Category badge */}
+                      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-black/70 backdrop-blur-sm px-2 sm:px-3 py-1 rounded-full">
+                        <span className="text-white text-xs font-rubik">{project.category}</span>
+                      </div>
+                    </div>
+
+                    {/* Text content area with simplified hover effects */}
+                    <div className="px-3 xs:px-4 sm:px-6 md:px-8 py-3 xs:py-4 sm:py-6 bg-[#111111] flex-grow flex flex-col">
+                      {/* Client name with hover movement effect */}
+                      <div className="overflow-hidden mb-1 sm:mb-2">
+                        <h3 className="font-switzer font-bold text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#FFD700] leading-tight tracking-tight transform group-hover:translate-x-2 transition-transform duration-300">
+                          {project.client}
+                        </h3>
                       </div>
 
-                      {/* Right side - Project details */}
-                      <div className="w-full md:w-1/2 p-3 xs:p-4 sm:p-6 md:p-8 flex flex-col justify-center">
-                        {/* Client name */}
-                        <h4 className="text-gray-400 text-xs sm:text-sm uppercase tracking-wider mb-1 sm:mb-2">
-                          {project.client}
-                        </h4>
-
-                        {/* Project title - smaller on mobile */}
-                        <h3 className="text-lg xs:text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4 line-clamp-2">
+                      {/* Title with hover movement effect */}
+                      <div className="overflow-hidden mb-4 sm:mb-6 md:mb-8">
+                        <h4 className="font-rubik font-bold text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 tracking-tight transform group-hover:translate-x-2 transition-transform duration-300">
                           {project.title}
-                        </h3>
+                        </h4>
+                      </div>
 
-                        {/* Category and year */}
-                        <div className="flex items-center text-xs sm:text-sm text-gray-400 mb-2 sm:mb-4 md:mb-6">
-                          <span>{project.category}</span>
-                          <span className="mx-2">•</span>
-                          <span>{project.year}</span>
-                        </div>
+                      {/* Bottom row with year and View Project button */}
+                      <div className="flex justify-between items-center border-t border-white/10 pt-2 xs:pt-3 sm:pt-4 mt-auto">
+                        {/* Year moved to the left */}
+                        <span className="text-white/80 font-rubik text-sm sm:text-base md:text-lg transform group-hover:translate-x-2 transition-transform duration-300">
+                          {project.year}
+                        </span>
 
-                        {/* Project description - hide on very small screens, limit lines on mobile */}
-                        <p className="hidden xs:block text-gray-300 text-xs xs:text-sm sm:text-base mb-3 sm:mb-4 md:mb-6 line-clamp-3 md:line-clamp-none">
-                          {project.description.includes("design system") ? (
-                            <>
-                              An intuitive <span className="text-[#FFD700]">design system</span> that increased
-                              development speed by 40% and improved UI consistency across platforms
-                            </>
-                          ) : (
-                            project.description
-                          )}
-                        </p>
-
-                        {/* View Project button */}
-                        <Link href={project.link} className="inline-block mt-auto">
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="bg-[#1a1a1a] text-white rounded-full py-1.5 xs:py-2 sm:py-3 px-3 xs:px-4 sm:px-6 inline-flex items-center border border-[#333] hover:border-[#FFD700] transition-colors"
+                        {/* View Project button as a pill-shaped button with yellow arrow - REMOVED text hover effect */}
+                        <div className="gradient-border-container rounded-full">
+                          <a
+                            href={project.slug}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#111111] hover:bg-[#222222] text-white rounded-full py-1 xs:py-1.5 sm:py-2 px-2 xs:px-3 sm:px-4 flex items-center gap-1 xs:gap-1.5 sm:gap-2 transition-colors duration-300 group/button"
+                            onClick={(e) => {
+                              // Prevent the click from triggering the card's drag behavior
+                              e.stopPropagation()
+                            }}
                           >
-                            <span className="mr-1 xs:mr-2 text-xs xs:text-sm sm:text-base">View Project</span>
-                            <ArrowRight size={14} className="xs:size-16" />
-                          </motion.div>
-                        </Link>
+                            <span className="font-medium text-xs xs:text-sm whitespace-nowrap">View Project</span>
+                            <div className="bg-[#FFD700] rounded-full p-0.5 xs:p-1 flex items-center justify-center group-hover/button:scale-110 transition-transform duration-300">
+                              <ArrowRight
+                                size={windowWidth < 480 ? 8 : windowWidth < 640 ? 10 : 12}
+                                className="text-black"
+                              />
+                            </div>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -393,47 +449,66 @@ const DiscoverWork: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation arrows below the carousel */}
-        <div className="flex justify-center space-x-4 mt-4">
+        {/* Navigation arrows below the carousel - UPDATED to match testimonials section */}
+        <div className="flex justify-center space-x-4 mt-5">
           <motion.button
             onClick={goToPrevious}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors"
+            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] transition-colors ${
+              isAnimating ? "opacity-50 cursor-not-allowed" : "hover:bg-[#FFD700] hover:text-black cursor-pointer"
+            }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            disabled={isAnimating}
             aria-label="Previous project"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={24} />
           </motion.button>
           <motion.button
             onClick={goToNext}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors"
+            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] transition-colors ${
+              isAnimating ? "opacity-50 cursor-not-allowed" : "hover:bg-[#FFD700] hover:text-black cursor-pointer"
+            }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            disabled={isAnimating}
             aria-label="Next project"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={24} />
           </motion.button>
         </div>
       </div>
 
       {/* View All Projects Button */}
       <div className="section-container">
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-6 sm:mt-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            {/* Gradient border container */}
+            {/* Gradient border container
             <div className="gradient-border-container rounded-full">
-              <button className="bg-[#1a1a1a] text-white rounded-full py-5 px-10 flex items-center gap-4 hover:bg-[#2a2a2a] transition-colors text-xl">
-                <span className="font-semibold pl-1 xs:pl-2">SEE &apos;EM ALL</span>
-                <div className="bg-[#FFD700] rounded-full p-2 flex items-center justify-center">
-                  <ArrowRight size={20} className="text-black" />
+              <button
+                className="bg-[#1a1a1a] text-white rounded-full py-3 sm:py-4 md:py-5 px-6 sm:px-8 md:px-10 flex items-center gap-2 sm:gap-3 md:gap-4 hover:bg-[#2a2a2a] transition-colors text-base sm:text-lg md:text-xl group"
+                onClick={() => {
+                  const heroSection = document.getElementById("hero")
+                  if (heroSection) {
+                    heroSection.scrollIntoView({ behavior: "smooth" })
+                  }
+                }}
+              >
+                <span className="font-semibold tracking-wider transform group-hover:translate-x-2 transition-transform duration-300">
+                  SEE &apos;EM ALL
+                </span>
+                <div className="bg-[#FFD700] rounded-full p-1 sm:p-1.5 md:p-2 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <ArrowRight
+                    size={windowWidth < 640 ? 16 : 20}
+                    className="text-black group-hover:translate-x-1 transition-transform duration-300"
+                  />
                 </div>
               </button>
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>

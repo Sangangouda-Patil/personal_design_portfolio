@@ -1,415 +1,143 @@
 "use client"
 
-import { motion, type Variants, useInView } from "framer-motion"
-import { Rubik } from "next/font/google"
+import type React from "react"
+
+import { motion } from "framer-motion"
 import Image from "next/image"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { ArrowRight } from "lucide-react"
-
-// Load Rubik font with bold weight
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"], // Bold weight
-})
-
-// Define heading content with explicit line breaks for different screen sizes
-const headingContent = [
-  { text: "Bringing digital", breakAfter: true },
-  { text: "products to life ", breakAfter: true },
-  { text: "with pixels and", breakAfter: true },
-  { text: "code", breakAfter: false },
-]
-
-// Letter variants with smoother transition
-const letterVariants: Variants = {
-  initial: {
-    color: "transparent",
-    WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.8)",
-  },
-  animate: {
-    color: "white",
-    WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.8)",
-    transition: {
-      duration: 0.4, // Longer duration for smoother fill
-      ease: [0.23, 1, 0.32, 1], // Custom easing for smoother animation
-    },
-  },
-}
-
-// Scribble line animation variants with delay
-const scribbleLineVariants: Variants = {
-  hidden: {
-    pathLength: 0,
-    opacity: 0,
-  },
-  visible: {
-    pathLength: 1,
-    opacity: 1,
-    transition: {
-      pathLength: { type: "spring", duration: 0.6, bounce: 0, delay: 1 }, // 1 second delay
-      opacity: { duration: 0.2, delay: 1 }, // 1 second delay
-    },
-  },
-}
+import ShinyText from "../shared/ShinyText"
 
 const AboutSection = () => {
-  // State to track mouse position
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isHovering, setIsHovering] = useState(false)
-  const imageContainerRef = useRef<HTMLDivElement>(null)
-  const [rotation, setRotation] = useState({ x: 0, y: 0 })
+  // State to track if animation should start
+  const [animationStart, setAnimationStart] = useState(false)
 
-  // State for line hover
-  const [showPixelsLine, setShowPixelsLine] = useState(false)
-  const [showCodeLine, setShowCodeLine] = useState(false)
-
-  // Refs for heading text animation
-  const headingRef = useRef<HTMLDivElement>(null)
-  // Remove "once: true" to allow animation to trigger multiple times
-  const isInView = useInView(headingRef, { amount: 0.5 })
-
-  // State to control animation of each letter
-  const [animateLetters, setAnimateLetters] = useState<boolean[]>([])
-
-  // Calculate total number of characters
-  const totalChars = headingContent.reduce((sum, item) => sum + item.text.length, 0)
-
-  // Initialize animation states
+  // Start animation after component mounts
   useEffect(() => {
-    setAnimateLetters(Array(totalChars).fill(false))
-  }, [totalChars])
+    const timer = setTimeout(() => {
+      setAnimationStart(true)
+    }, 500) // Short delay before animation starts
 
-  // Reset and start animation when section comes into view
-  useEffect(() => {
-    // If section just came into view
-    if (isInView) {
-      // Reset animation states
-      setAnimateLetters(Array(totalChars).fill(false));
-
-      // Animate all letters with sequential delay
-      const animationTimer = setTimeout(() => {
-        const animateNextLetter = (index: number) => {
-          if (index >= totalChars) return;
-
-          setAnimateLetters((prev) => {
-            const newState = [...prev];
-            newState[index] = true;
-            return newState;
-          });
-
-          setTimeout(() => animateNextLetter(index + 1), 50); // 50ms delay between each letter
-        };
-
-        animateNextLetter(0);
-      }, 300); // Initial delay before animation starts
-
-      return () => {
-        clearTimeout(animationTimer);
-      };
-    }
-  }, [isInView, totalChars]);
-
-  // Update rotation based on mouse position
-  useEffect(() => {
-    if (!imageContainerRef.current || !isHovering) {
-      // Gradually return to center when not hovering
-      setRotation((prev) => ({
-        x: prev.x * 0.9,
-        y: prev.y * 0.9,
-      }))
-      return
-    }
-
-    const rect = imageContainerRef.current.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-
-    // Calculate distance from center (normalized to -1 to 1)
-    const x = (mousePosition.x - centerX) / (rect.width / 2)
-    const y = (mousePosition.y - centerY) / (rect.height / 2)
-
-    // Limit rotation to a reasonable range (-5 to 5 degrees)
-    const rotateY = Math.min(Math.max(x * 5, -5), 5)
-    const rotateX = Math.min(Math.max(y * -5, -5), 5)
-
-    setRotation({ x: rotateX, y: rotateY })
-  }, [mousePosition, isHovering])
-
-  // Track mouse movement
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-    }
+    return () => clearTimeout(timer)
   }, [])
 
-  // Function to render animated heading with controlled line breaks
-  const renderAnimatedHeading = () => {
-    let globalCharIndex = 0
-
-    return (
-      <h2
-        className={`
-          ${rubik.className} 
-          text-2xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl
-          font-bold
-          leading-[1.2] sm:leading-[1.2] md:leading-[1.2]
-          tracking-normal
-          uppercase
-        `}
-      >
-        {headingContent.map((line, lineIndex) => {
-          // Split the line into words
-          const words = line.text.split(" ")
-
-          return (
-            <div key={`line-${lineIndex}`} className={line.breakAfter ? "mb-2 sm:mb-3" : ""}>
-              {words.map((word, wordIndex) => {
-                // Add space between words (except for the first word in a line)
-                const needsSpace = wordIndex > 0
-
-                // Check if this word is "pixels" or "code"
-                const isPixels = word.toLowerCase() === "pixels"
-                const isCode = word.toLowerCase() === "code"
-
-                // Create spans for each character including spaces
-                const wordSpans = []
-
-                // Add space before word if needed
-                if (needsSpace) {
-                  const spaceIndex = globalCharIndex
-                  globalCharIndex++
-
-                  wordSpans.push(
-                    <motion.span
-                      key={`space-${spaceIndex}`}
-                      className="inline-block"
-                      initial="initial"
-                      animate={animateLetters[spaceIndex] ? "animate" : "initial"}
-                      variants={letterVariants}
-                    >
-                      &nbsp;
-                    </motion.span>,
-                  )
-                }
-
-                // Add each character of the word
-                for (let i = 0; i < word.length; i++) {
-                  const char = word[i]
-                  const charIndex = globalCharIndex
-                  globalCharIndex++
-
-                  wordSpans.push(
-                    <motion.span
-                      key={`char-${charIndex}`}
-                      className="inline-block"
-                      initial="initial"
-                      animate={animateLetters[charIndex] ? "animate" : "initial"}
-                      variants={letterVariants}
-                      style={{
-                        WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.8)",
-                      }}
-                    >
-                      {char}
-                    </motion.span>,
-                  )
-                }
-
-                // Return the word with hover effect if it's a special word
-                if (isPixels) {
-                  return (
-                    <span
-                      key={`word-${wordIndex}`}
-                      className="inline-block whitespace-nowrap relative"
-                      onMouseEnter={() => setShowPixelsLine(true)}
-                      onMouseLeave={() => setShowPixelsLine(false)}
-                    >
-                      {wordSpans}
-                      <motion.svg
-                        viewBox="0 0 100 10"
-                        className="absolute -bottom-3 left-0 w-full h-4 pointer-events-none"
-                        initial="hidden"
-                        animate={showPixelsLine ? "visible" : "hidden"}
-                      >
-                        <motion.path
-                          d="M0,5 L100,5"
-                          fill="none"
-                          stroke="#FFD700"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeDasharray="1,3"
-                          variants={scribbleLineVariants}
-                        />
-                      </motion.svg>
-                    </span>
-                  )
-                } else if (isCode) {
-                  return (
-                    <span
-                      key={`word-${wordIndex}`}
-                      className="inline-block whitespace-nowrap relative"
-                      onMouseEnter={() => setShowCodeLine(true)}
-                      onMouseLeave={() => setShowCodeLine(false)}
-                    >
-                      {wordSpans}
-                      <motion.svg
-                        viewBox="0 0 100 10"
-                        className="absolute -bottom-3 left-0 w-full h-4 pointer-events-none"
-                        initial="hidden"
-                        animate={showCodeLine ? "visible" : "hidden"}
-                      >
-                        <motion.path
-                          d="M0,5 L100,5"
-                          fill="none"
-                          stroke="#FFD700"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeDasharray="1,3"
-                          variants={scribbleLineVariants}
-                        />
-                      </motion.svg>
-                    </span>
-                  )
-                } else {
-                  return (
-                    <span key={`word-${wordIndex}`} className="inline-block whitespace-nowrap">
-                      {wordSpans}
-                    </span>
-                  )
-                }
-              })}
-            </div>
-          )
-        })}
-      </h2>
-    )
+  // Handle CV button click with smooth scroll to EducationCareerSection
+  const handleCVButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const educationCareerSection = document.getElementById("education-career")
+    if (educationCareerSection) {
+      educationCareerSection.scrollIntoView({ behavior: "smooth" })
+    }
   }
 
   return (
-    <section id="about" className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a]">
+    <section id="about" className="py-8 sm:py-12 md:py-16 bg-[#0a0a0a]">
       <div className="section-container">
-        {/* Header with yellow accent - aligned left */}
-        <div className="flex items-start mb-8 sm:mb-10 md:mb-12">
-          <motion.div
-            initial={{ height: 0 }}
-            whileInView={{ height: "50px" }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="w-1 bg-[#FFD700] mr-3 sm:mr-4"
-          ></motion.div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl">
-            <span className={`${rubik.className} font-bold text-white`}>ABOUT</span>
-            <span className="text-[#FFD700] font-bold font-times italic"> ME</span>
+        {/* Centered Section Header with ShinyText effect */}
+        <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+          <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
+            <span className={`font-rubik-bold text-white`}>
+              <ShinyText text="About" speed={3} className={`font-rubik-bold`} />
+            </span>
+            <span className="text-[#FFD700] font-bold font-times italic"> Me</span>
           </h2>
         </div>
       </div>
 
       {/* About content - using section-container for consistent margins */}
       <div className="section-container">
-        <div className="max-w-[1400px] mx-auto">
-          {/* Changed from md: to lg: breakpoint for the flex layout */}
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 md:gap-12 lg:gap-16">
-            {/* Container for 3D perspective */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative w-full max-w-[320px] sm:max-w-[400px] lg:w-[45%] xl:w-[40%] mx-auto"
-              style={{
-                perspective: "1000px",
-                aspectRatio: "6/8", // Makes the frame taller than it is wide
-              }}
-              ref={imageContainerRef}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              {/* 3D rotating container */}
-              <div
-                className="absolute inset-0 transition-transform duration-200 ease-out"
-                style={{
-                  transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                {/* Visible border with gold gradient */}
-                <div
-                  className="absolute inset-0 rounded-lg"
-                  style={{
-                    background: "linear-gradient(135deg, #FFD700 0%, rgba(255, 215, 0, 0.3) 100%)",
-                    padding: "2px",
-                    transform: "translateZ(0px)",
-                  }}
+        {/* Center-aligned container with max-width for the profile and bio group */}
+        <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
+          {/* Two-column grid for profile image and bio with moderate gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-6">
+            {/* Profile Image - Polaroid style with fixed size */}
+            <div className="flex justify-center md:justify-center md:-mr-8">
+              {/* Gradient border container - Adding this wrapper for consistency */}
+              <div className="gradient-border-container rounded-xl p-[2px] max-w-full">
+                {/* Fixed size Polaroid frame with animation - Changed bg-white to bg-[#111111] */}
+                <motion.div
+                  className="bg-[#111111] rounded-xl p-4 pb-16 relative w-[320px] h-[420px] xs:w-[360px] xs:h-[460px] sm:w-[400px] sm:h-[500px] md:w-[420px] md:h-[520px] max-w-full"
+                  initial={{ opacity: 0, y: 20, rotate: -5, scale: 0.9 }}
+                  animate={
+                    animationStart
+                      ? {
+                          opacity: 1,
+                          y: [0, -5, 0, -5, 0],
+                          rotate: [0, -1, 0, -1, 0],
+                          scale: 1,
+                          transition: {
+                            opacity: { duration: 1 },
+                            y: { repeat: Number.POSITIVE_INFINITY, duration: 4, ease: "easeInOut" },
+                            rotate: { repeat: Number.POSITIVE_INFINITY, duration: 4.5, ease: "easeInOut" },
+                            scale: { duration: 1 },
+                          },
+                        }
+                      : { opacity: 0, y: 20, rotate: -5, scale: 0.9 }
+                  }
                 >
-                  {/* Dark background for image */}
-                  <div className="absolute inset-0 rounded-lg bg-[#1a1a1a]" style={{ transform: "translateZ(1px)" }}>
-                    {/* Image container */}
-                    <div className="absolute inset-0 rounded-lg overflow-hidden">
-                      <Image
-                        src="/images/aboutimage.webp"
-                        alt="ABout-Image"
-                        fill
-                        className="object-cover"
-                        style={{ transform: "translateZ(2px)" }}
-                      />
-                    </div>
+                  {/* Profile image container */}
+                  <div className="w-full h-[300px] xs:h-[340px] sm:h-[380px] md:h-[400px] rounded-lg overflow-hidden relative">
+                    <Image src="/images/aboutimage.webp" alt="Profile photo" fill className="object-cover" priority />
                   </div>
-                </div>
+                  {/* Caption text - Updated text color to light for dark background */}
+                  <div className="absolute bottom-4 left-0 w-full text-center">
+                    <p className="font-times italic text-gray-300 text-sm xs:text-base sm:text-lg md:text-xl">
+                      It&apos;s me{" "}
+                      <span role="img" aria-label="pointing up">
+                        👆
+                      </span>
+                    </p>
+                    <p className="font-times italic text-gray-400 text-xs xs:text-sm text-sm xs:text-base sm:text-lg md:text-xl">
+                      in a colored photo from 2025
+                    </p>
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
+            </div>
 
-            {/* About text */}
+            {/* About text - clean, minimal design matching the reference image */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="w-full lg:w-[55%] xl:w-[60%] mt-6 lg:mt-0 text-center lg:text-left "
+              className="flex flex-col justify-start md:pt-16 text-center md:text-left md:-ml-4"
             >
-              {/* Main heading with letter-by-letter animation */}
-              <div className="mb-8 mt-6 sm:mt-8 lg:mt-10" ref={headingRef}>
-                {renderAnimatedHeading()}
+              {/* Simple greeting */}
+              <h2 className="font-switzer-semibold text-white text-3xl xs:text-4xl sm:text-5xl mb-5 sm:mb-7">
+                Greetings 👋
+              </h2>
+
+              {/* Clean, minimal bio with better spacing and typography - matching the reference */}
+              <div className="mb-8 sm:mb-10">
+                <p className="font-switzer-regular text-gray-400 text-lg xs:text-xl sm:text-2xl leading-relaxed max-w-[500px] mx-auto md:mx-0">
+                  I'm <span className="text-gray-300">Sangangouda Patil</span>, a curious designer, casual PC gamer (IKYK 😂), and
+                  part-time backpacker with a love for good UI and great mountains. I've been helping brands to shape meaningful
+                  digital experiences as a <span className="text-gray-300">Design Executive</span> at Alphanumero.
+                </p>
               </div>
 
-              {/* Bio paragraph - with enhanced responsive typography */}
-              <p
-                className={`
-                  ${rubik.className} 
-                  font-medium text-gray-400 
-                  text-sm xs:text-base sm:text-base md:text-m lg:text-l l:text-xl
-                  leading-relaxed 
-                  max-w-[60ch]
-                  mt-3 xs:mt-4 mb-6 xs:mb-8
-                `}
-              >
-                Hi, I am Sam – A designer and developer from India, currently crafting innovative experiences as a
-                <span className="font-bold text-white whitespace-nowrap"> {""}Design Executive</span> at Alphanumero
-              </p>
-
-              {/* Read My CV Button - Updated to match the "SEE 'EM ALL" button style */}
+              {/* Read My CV Button - Updated to match WorkSection button */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 viewport={{ once: true }}
-                className="inline-block"
+                className="flex justify-center md:justify-start"
               >
                 <div className="gradient-border-container rounded-full">
-                  <a
-                    href="/cv.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-[#1a1a1a] text-white rounded-full py-5 px-10 flex items-center gap-4 hover:bg-[#2a2a2a] transition-colors text-xl"
+                  <motion.button
+                    onClick={handleCVButtonClick}
+                    className="bg-[#1a1a1a] text-white rounded-full py-3 xs:py-4 sm:py-5 px-6 xs:px-8 sm:px-10 flex items-center gap-3 xs:gap-4 hover:bg-[#2a2a2a] transition-colors text-sm xs:text-base sm:text-lg md:text-xl"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <span className="font-semibold pl-1 xs:pl-2">Read My CV</span>
-                    <div className="bg-[#FFD700] rounded-full p-2 flex items-center justify-center">
-                      <ArrowRight size={20} className="text-black" />
+                    <span className="font-switzer-extrabold uppercase pl-1 xs:pl-2">READ MY CV</span>
+                    <div className="bg-[#FFD700] rounded-full p-1.5 xs:p-2 flex items-center justify-center flex-shrink-0">
+                      <ArrowRight size={16} className="text-black sm:hidden" />
+                      <ArrowRight size={20} className="text-black hidden sm:block" />
                     </div>
-                  </a>
+                  </motion.button>
                 </div>
               </motion.div>
             </motion.div>

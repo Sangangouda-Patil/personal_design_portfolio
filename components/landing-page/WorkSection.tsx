@@ -6,6 +6,7 @@ import { Rubik } from "next/font/google"
 import { Heart, Bookmark, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
+import ShinyText from "../shared/ShinyText"
 
 // Load Rubik font with bold weight
 const rubik = Rubik({
@@ -17,104 +18,92 @@ const initialProjects = [
   {
     id: 1,
     image: "/worksection/img1.webp",
-    title: "Project One",
   },
   {
     id: 2,
     image: "/worksection/img2.webp",
-    title: "Project Two",
   },
   {
     id: 3,
     image: "/worksection/img3.webp",
-    title: "Project Three",
   },
   {
     id: 4,
     image: "/worksection/img4.webp",
-    title: "Project Four",
   },
   {
     id: 5,
     image: "/worksection/img5.webp",
-    title: "Project Five",
   },
   {
     id: 6,
     image: "/worksection/img6.webp",
-    title: "Project Six",
   },
   {
     id: 7,
-    image: "/worksection/img7.webp",
-    title: "Project Seven",
+    image: "/worksection/img21.webp",
   },
   {
     id: 8,
-    image: "/worksection/img8.webp",
-    title: "Project Eight",
+    image: "/worksection/img22.webp",
   },
   {
     id: 9,
     image: "/worksection/img9.webp",
-    title: "Project Nine",
   },
   {
     id: 10,
     image: "/worksection/img10.webp",
-    title: "Project Ten",
   },
   {
     id: 11,
     image: "/worksection/img11.webp",
-    title: "Project Eleven",
   },
   {
     id: 12,
     image: "/worksection/img12.webp",
-    title: "Project Twelve",
   },
   {
     id: 13,
     image: "/worksection/img13.webp",
-    title: "Project Thirteen",
   },
   {
     id: 14,
     image: "/worksection/img14.webp",
-    title: "Project Fourteen",
   },
   {
     id: 15,
     image: "/worksection/img15.webp",
-    title: "Project Fifteen",
   },
   {
     id: 16,
     image: "/worksection/img16.webp",
-    title: "Project Sixteen",
   },
   {
     id: 17,
     image: "/worksection/img17.webp",
-    title: "Project Seventeen",
   },
   {
     id: 18,
     image: "/worksection/img18.webp",
-    title: "Project Eighteen",
   },
   {
     id: 19,
     image: "/worksection/img19.webp",
-    title: "Project Nineteen",
   },
   {
     id: 20,
     image: "/worksection/img20.webp",
-    title: "Project Twenty",
   },
-]
+  {
+    id: 21,
+    image: "/worksection/img7.webp",
+  },
+  {
+    id: 22,
+    image: "/worksection/img9.webp",
+  },
+];
 
 const WorkSection: React.FC = () => {
   // State to track liked projects
@@ -494,30 +483,36 @@ const WorkSection: React.FC = () => {
     }
   }, [itemWidth, updateSliderPosition])
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const updateScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768); // Example breakpoint for mobile
+    };
+
+    updateScreenSize(); // Set initial value
+    window.addEventListener("resize", updateScreenSize);
+
+    return () => window.removeEventListener("resize", updateScreenSize);
+  }, []);
+
   return (
     <section id="work" className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
       <div className="section-container">
-        {/* Header with yellow accent - aligned left */}
-        <div className="flex items-start mb-8 sm:mb-10 md:mb-12">
-          <motion.div
-            initial={{ height: 0 }}
-            whileInView={{ height: "90px" }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="w-1 bg-[#FFD700] mr-3 sm:mr-4"
-          ></motion.div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl">
-            <span className={`${rubik.className} font-bold text-white`}>WORK THAT I AM</span>
-            <br />
-            <span className={`${rubik.className} font-bold text-white`}>TRULY PROUD</span>
-            <span className="text-[#FFD700] font-bold font-times italic"> OF </span>
+       {/* Centered Section Header with ShinyText effect */}
+       <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+          <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
+            <span className={`font-rubik-bold text-white`}>
+              <ShinyText text="Graphic" speed={3} className={`font-rubik-bold`} />
+            </span>
+            <span className="text-[#FFD700] font-bold font-times italic"> Work</span>
           </h2>
         </div>
       </div>
 
       {/* Projects Slider with infinite scrolling - full width with slight margins */}
       <div
-        className="relative mb-12 overflow-hidden w-full"
+        className="relative mb-12 overflow-hidden w-full mt-10 sm:mt-20 md:mt-30"
         ref={sliderRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -545,7 +540,7 @@ const WorkSection: React.FC = () => {
                   <div className="w-full relative" style={{ paddingBottom: "125%" }}>
                     <Image
                       src={project.image || "/placeholder.svg"}
-                      alt={project.title}
+                      alt={`Project ${project.id}`}
                       fill
                       className="object-contain bg-[#111111]"
                       sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw`}
@@ -587,7 +582,7 @@ const WorkSection: React.FC = () => {
                     </div>
 
                     {/* Minimal project title */}
-                    <p className="text-white text-sm mt-2">{project.title}</p>
+                    {/* <p className="text-white text-sm mt-2">{project.title}</p> */}
                   </div>
                 </motion.div>
               </div>
@@ -607,12 +602,22 @@ const WorkSection: React.FC = () => {
           >
             {/* Gradient border container */}
             <div className="gradient-border-container rounded-full">
-              <button className="bg-[#1a1a1a] text-white rounded-full py-5 px-10 flex items-center gap-4 hover:bg-[#2a2a2a] transition-colors text-xl">
-                <span className="font-semibold pl-1 xs:pl-2">SEE &apos;EM ALL</span>
-                <div className="bg-[#FFD700] rounded-full p-2 flex items-center justify-center">
-                  <ArrowRight size={20} className="text-black" />
+              <motion.button
+                className="bg-[#1a1a1a] text-white rounded-full py-3 xs:py-4 sm:py-5 px-6 xs:px-8 sm:px-10 flex items-center gap-3 xs:gap-4 hover:bg-[#2a2a2a] transition-colors text-sm xs:text-base sm:text-lg md:text-xl"
+                onClick={() => {
+                  const contactSection = document.getElementById("hero")
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: "smooth" })
+                  }
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="font-switzer-extrabold uppercase pl-1 xs:pl-2">SEE &apos;EM ALL</span>
+                <div className="bg-[#FFD700] rounded-full p-1.5 xs:p-2 flex items-center justify-center flex-shrink-0">
+                  <ArrowRight size={isMobile ? 16 : 20} className="text-black" />
                 </div>
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         </div>

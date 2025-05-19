@@ -5,6 +5,7 @@ import { Rubik } from "next/font/google"
 import { useState, useCallback, useEffect, useRef } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import ShinyText from "../shared/ShinyText"
 
 // Load Rubik font with bold weight
 const rubik = Rubik({
@@ -42,6 +43,13 @@ const testimonials = [
 
 // Default avatar path as a constant
 const DEFAULT_AVATAR = "/3d-avatar.webp"
+
+// Emoji positions for floating animation
+const emojiPositions = [
+  { size: "w-10 h-10", initialPosition: { top: 5, left: 5 } },
+  { size: "w-12 h-12", initialPosition: { top: 70, left: 10 } },
+  { size: "w-8 h-8", initialPosition: { top: 20, left: 85 } },
+]
 
 const TestimonialsSection = () => {
   // State for current slide and animation direction
@@ -102,12 +110,9 @@ const TestimonialsSection = () => {
   }, [nextSlide, isAnimating])
 
   // Helper function to get index with wrapping
-  const getWrappedIndex = useCallback(
-    (index: number) => {
-      return ((index % testimonials.length) + testimonials.length) % testimonials.length
-    },
-    []
-  )
+  const getWrappedIndex = useCallback((index: number) => {
+    return ((index % testimonials.length) + testimonials.length) % testimonials.length
+  }, [])
 
   // Get previous and next indices with wrapping
   const prevIndex = getWrappedIndex(currentIndex - 1)
@@ -190,23 +195,67 @@ const TestimonialsSection = () => {
 
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] relative overflow-hidden">
-      <div className="section-container">
-        {/* Section Header with yellow accent - aligned left */}
-        <div className="flex items-start mb-10 sm:mb-12 md:mb-16">
-          <motion.div
-            initial={{ height: 0 }}
-            whileInView={{ height: "80px" }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="w-1 bg-[#FFD700] mr-3 sm:mr-4 sm:h-[60px] md:h-[80px]"
-          ></motion.div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl">
-            <span className={`${rubik.className} font-bold text-white`}>STORIES OF</span>
-            <br />
-            <span className={`${rubik.className} font-bold text-white`}>IMPACTFUL </span>
-            <span className="text-[#FFD700] font-bold font-times italic">{""} DESIGN</span>
+      {/* Floating emojis - positioned behind everything */}
+      {emojiPositions.map((emoji, index) => (
+        <motion.div
+          key={`emoji-${index}`}
+          className={`absolute ${emoji.size} opacity-10 pointer-events-none`}
+          style={{
+            zIndex: 0,
+            top: `${emoji.initialPosition.top}%`,
+            left: `${emoji.initialPosition.left}%`,
+          }}
+          initial={{ rotate: 0 }}
+          animate={{
+            top: [
+              `${emoji.initialPosition.top}%`,
+              `${emoji.initialPosition.top + 20}%`,
+              `${emoji.initialPosition.top - 15}%`,
+              `${emoji.initialPosition.top}%`,
+            ],
+            left: [
+              `${emoji.initialPosition.left}%`,
+              `${emoji.initialPosition.left - 15}%`,
+              `${emoji.initialPosition.left + 10}%`,
+              `${emoji.initialPosition.left}%`,
+            ],
+            rotate: [0, 5, -5, 0],
+          }}
+          transition={{
+            top: {
+              repeat: Number.POSITIVE_INFINITY,
+              duration: 30 + index * 5,
+              ease: "easeInOut",
+              delay: index * 2,
+            },
+            left: {
+              repeat: Number.POSITIVE_INFINITY,
+              duration: 40 + index * 5,
+              ease: "easeInOut",
+              delay: index * 1.5,
+            },
+            rotate: {
+              repeat: Number.POSITIVE_INFINITY,
+              duration: 20 + index * 3,
+              ease: "easeInOut",
+            },
+          }}
+        >
+          <img src="/icons/heartemoji.png" alt="Heart eyes emoji" className="w-full h-full object-contain" />
+        </motion.div>
+      ))}
+
+      <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
+       {/* Centered Section Header with ShinyText effect */}
+       <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+          <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
+            <span className={`font-rubik-bold text-white`}>
+              <ShinyText text="Voices of" speed={3} className={`font-rubik-bold`} />
+            </span>
+            <span className="text-[#FFD700] font-bold font-times italic"> Satisfaction</span>
           </h2>
         </div>
+    
 
         {/* Mobile Testimonials (Single Card View) */}
         <div className="md:hidden mb-8 relative min-h-[300px]">
@@ -224,7 +273,9 @@ const TestimonialsSection = () => {
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
                 <div className="bg-[#111111] rounded-3xl p-6 h-full relative">
-                  <p className="text-white text-base mb-12 font-times italic">&quot;{testimonials[currentIndex].quote}&quot;</p>
+                  <p className="font-switzer-medium italic text-white text-base mb-12">
+                    &quot;{testimonials[currentIndex].quote}&quot;
+                  </p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">
@@ -248,8 +299,8 @@ const TestimonialsSection = () => {
 
                     {/* Name and title */}
                     <div>
-                      <h4 className="text-white font-medium">{testimonials[currentIndex].name}</h4>
-                      <p className="text-gray-400 text-sm">{testimonials[currentIndex].title}</p>
+                      <h4 className="font-switzer-medium text-white">{testimonials[currentIndex].name}</h4>
+                      <p className="font-switzer-medium text-gray-400 text-sm">{testimonials[currentIndex].title}</p>
                     </div>
                   </div>
                 </div>
@@ -260,7 +311,7 @@ const TestimonialsSection = () => {
 
         {/* Desktop Testimonials with visible adjacent slides */}
         <div className="hidden md:block mb-16">
-          <div className="flex justify-center items-center relative min-h-[350px]">
+          <div className="flex justify-center items-center relative min-h-[350px] mt-10 sm:mt-20 md:mt-30">
             {/* Previous testimonial */}
             <motion.div
               className="w-1/3 px-2 opacity-10 transform -translate-x-1/4"
@@ -273,7 +324,9 @@ const TestimonialsSection = () => {
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
                 <div className="bg-[#111111] rounded-3xl p-8 h-full relative">
-                  <p className="text-white text-lg mb-12 font-times italic">&quot;{testimonials[prevIndex].quote}&quot;</p>
+                  <p className="font-switzer-medium italic text-white text-lg mb-12">
+                    &quot;{testimonials[prevIndex].quote}&quot;
+                  </p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">
@@ -292,8 +345,8 @@ const TestimonialsSection = () => {
 
                     {/* Name and title */}
                     <div>
-                      <h4 className="text-white font-medium">{testimonials[prevIndex].name}</h4>
-                      <p className="text-gray-400 text-sm">{testimonials[prevIndex].title}</p>
+                      <h4 className="font-switzer-bold text-white">{testimonials[prevIndex].name}</h4>
+                      <p className="font-switzer-bold text-gray-400 text-sm">{testimonials[prevIndex].title}</p>
                     </div>
                   </div>
                 </div>
@@ -316,7 +369,9 @@ const TestimonialsSection = () => {
                   {/* Gradient border container */}
                   <div className="gradient-border-container rounded-3xl p-[2px]">
                     <div className="bg-[#111111] rounded-3xl p-8 h-full relative">
-                      <p className="text-white text-lg mb-12 font-times italic">&quot;{testimonials[currentIndex].quote}&quot;</p>
+                      <p className="font-switzer-medium italic text-white text-lg mb-12">
+                        &quot;{testimonials[currentIndex].quote}&quot;
+                      </p>
 
                       {/* Bottom section with avatar and info */}
                       <div className="flex items-center mt-4 mb-2">
@@ -340,8 +395,8 @@ const TestimonialsSection = () => {
 
                         {/* Name and title */}
                         <div>
-                          <h4 className="text-white text-xl font-medium">{testimonials[currentIndex].name}</h4>
-                          <p className="text-gray-400 text-base">{testimonials[currentIndex].title}</p>
+                          <h4 className="font-switzer-bold text-white">{testimonials[currentIndex].name}</h4>
+                          <p className="font-switzer-bold text-gray-400 text-base">{testimonials[currentIndex].title}</p>
                         </div>
                       </div>
                     </div>
@@ -362,7 +417,9 @@ const TestimonialsSection = () => {
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
                 <div className="bg-[#111111] rounded-3xl p-8 h-full relative">
-                  <p className="text-white text-lg mb-12 font-times italic">&quot;{testimonials[nextIndex].quote}&quot;</p>
+                  <p className="font-switzer-medium italic text-white text-lg mb-12">
+                    &quot;{testimonials[nextIndex].quote}&quot;
+                  </p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">
@@ -381,8 +438,8 @@ const TestimonialsSection = () => {
 
                     {/* Name and title */}
                     <div>
-                      <h4 className="text-white font-medium">{testimonials[nextIndex].name}</h4>
-                      <p className="text-gray-400 text-sm">{testimonials[nextIndex].title}</p>
+                      <h4 className="font-switzer-bold text-white">{testimonials[nextIndex].name}</h4>
+                      <p className="font-switzer-bold text-gray-400 text-sm">{testimonials[nextIndex].title}</p>
                     </div>
                   </div>
                 </div>
@@ -391,8 +448,8 @@ const TestimonialsSection = () => {
           </div>
         </div>
 
-       {/* Navigation Arrows - Added more spacing and fixed positioning */}
-       <div className="flex justify-center space-x-4 mt-20">
+        {/* Navigation Arrows - Added more spacing and fixed positioning */}
+        <div className="flex justify-center space-x-4 mt-20">
           <button
             onClick={prevSlide}
             className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] transition-colors ${

@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 @layer base {
   :root {
@@ -74,38 +72,146 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Rubik', sans-serif;
   }
 }
 
-/* Add Roslindale Deck Narrow Italic font face */
-/* Add Roslindale Deck Narrow SemiBold Italic font face */
-/* @font-face {
-  font-family: 'Roslindale Deck Narrow';
-  src: url('/fonts/Roslindale-DeckNarrowSemiBoldItalic-Testing.ttf') format('opentype');
-  font-style: italic;
-  font-weight: 600; SemiBold weight */
-  /* font-display: swap;
-} */
+/* Font faces */
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-Regular.woff2") format("woff2"), url("/fonts/switzer/Switzer-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
-/* Create a class for Roslindale Deck Narrow SemiBold Italic
-.font-roslindale-italic {
-  font-family: 'Roslindale Deck Narrow', Georgia, serif;
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-RegularItalic.woff2") format("woff2"),
+    url("/fonts/switzer/Switzer-RegularItalic.woff") format("woff");
+  font-weight: 400;
   font-style: italic;
-  font-weight: 600;
-} */
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-Medium.woff2") format("woff2"), url("/fonts/switzer/Switzer-Medium.woff")
+    format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-MediumItalic.woff2") format("woff2"), url("/fonts/switzer/Switzer-MediumItalic.woff")
+    format("woff");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-Bold.woff2") format("woff2"), url("/fonts/switzer/Switzer-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-BoldItalic.woff2") format("woff2"), url("/fonts/switzer/Switzer-BoldItalic.woff")
+    format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-Extrabold.woff2") format("woff2"), url("/fonts/switzer/Switzer-Extrabold.woff")
+    format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-ExtraboldItalic.woff2") format("woff2"),
+    url("/fonts/switzer/Switzer-ExtraboldItalic.woff") format("woff");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-Black.woff2") format("woff2"), url("/fonts/switzer/Switzer-Black.woff")
+    format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-BlackItalic.woff2") format("woff2"), url("/fonts/switzer/Switzer-BlackItalic.woff")
+    format("woff");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Custom font utilities */
+.font-times-italic {
+  font-family: "Times New Roman", Times, serif;
+  font-style: italic;
+}
+
+.font-switzer-italic {
+  font-family: "Switzer", sans-serif;
+  font-style: italic;
+}
+
+.font-rubik-bold {
+  font-family: "Rubik", sans-serif;
+  font-weight: 700;
+}
+
+.font-switzer-regular {
+  font-family: "Switzer", sans-serif;
+  font-weight: 400;
+}
+
+.font-switzer-medium {
+  font-family: "Switzer", sans-serif;
+  font-weight: 500;
+}
+
+.font-switzer-extrabold {
+  font-family: "Switzer", sans-serif;
+  font-weight: 800;
+}
+
+.font-switzer-black {
+  font-family: "Switzer", sans-serif;
+  font-weight: 900;
+}
 
 /* Text outline effect */
 .text-outline {
   -webkit-text-stroke: 2px white;
-  text-stroke: 2px white;
+  /* Removed the non-standard text-stroke property */
   color: transparent;
 }
 
 /* Text fill animation */
 .text-fill-animation {
   -webkit-text-stroke: 2px white;
-  text-stroke: 2px white;
+  /* Removed the non-standard text-stroke property */
   color: white;
   transition: color 1.2s ease-in-out;
 }
@@ -123,7 +229,7 @@
 /* Custom dark background styles */
 @layer components {
   .dark-bg {
-    background-color: #fffcf3;
+    background-color: #0a0a0a;
     min-height: 100vh;
     width: 100%;
     position: relative;
@@ -134,7 +240,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    opacity: 0.03;
+    opacity: 0.01; /* Reduced from 0.03 */
     pointer-events: none;
     z-index: 1;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -143,6 +249,13 @@
   .dark-bg > * {
     position: relative;
     z-index: 2;
+  }
+
+  /* Add this to the @layer components section, after the dark-bg class */
+  .grainy-bg {
+    background-image: url("/background.svg");
+    background-repeat: repeat;
+    background-size: auto;
   }
 
   /* Gradient border container */
@@ -162,7 +275,7 @@
     border-radius: 0.5rem;
   }
 
-  .gradient-border-container.rounded-[2rem] {
+  .gradient-border-container.rounded-\[2rem\] {
     border-radius: 2rem;
   }
 
@@ -170,7 +283,7 @@
     border-radius: inherit;
   }
 
-  /* Animation for infinite scroll */
+  /* Update the animation duration for the brand slider */
   @keyframes scroll {
     0% {
       transform: translateX(0);
@@ -181,7 +294,7 @@
   }
 
   .animate-scroll {
-    animation: scroll 80s linear infinite; /* Increase duration for slower speed */
+    animation: scroll 60s linear infinite; /* Increased from 40s to 60s for slower scrolling */
     will-change: transform;
     animation-play-state: running !important;
   }
@@ -210,11 +323,11 @@
   }
 
   .animate-marquee {
-    animation: marquee 60s linear infinite; /* Increased duration for smoother scrolling */
+    animation: marquee 60s linear infinite; /* Increased from 60s to match the scroll animation */
   }
 
   .animate-marquee2 {
-    animation: marquee2 60s linear infinite; /* Increased duration for smoother scrolling */
+    animation: marquee2 60s linear infinite; /* Increased from 60s to match the scroll animation */
   }
 
   /* Full-width section with centered content */
@@ -264,9 +377,12 @@
 
   /* Add a new class for section consistency */
   .section-container {
-    max-width: 1200px; /* Adjust as needed */
-    margin: 0 auto;
-    padding: 0 16px; /* Adjust padding for left and right */
+    width: 100%;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
   @media (min-width: 640px) {
@@ -299,6 +415,138 @@
   .text-shadow-glow-gold {
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
   }
+
+  /* Typography animations and effects */
+  .letter-spacing-wide {
+    letter-spacing: 0.05em;
+  }
+
+  .letter-spacing-wider {
+    letter-spacing: 0.1em;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(to right, #ffd700, #ffa500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-outline-gold {
+    -webkit-text-stroke: 1px #ffd700;
+    /* Removed the non-standard text-stroke property */
+    color: transparent;
+  }
+
+  @keyframes textShine {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-text-shine {
+    background: linear-gradient(to right, #ffd700, #fff, #ffd700);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: textShine 3s linear infinite;
+  }
+
+  @keyframes letterFloat {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .animate-letter-float {
+    animation: letterFloat 2s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  /* Text reveal underline animation */
+  @keyframes lineReveal {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  .animate-line-reveal {
+    position: relative;
+  }
+
+  .animate-line-reveal::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #ffd700;
+    animation: lineReveal 0.5s forwards;
+  }
+
+  /* Grid pattern with center-to-edge fade effect */
+  .grid-pattern-center-fade {
+    background-size: 80px 80px;
+    background-image: radial-gradient(
+        circle at center,
+        transparent 0%,
+        rgba(10, 10, 10, 0) 30%,
+        rgba(10, 10, 10, 0.5) 60%,
+        rgba(10, 10, 10, 0.9) 85%,
+        rgba(10, 10, 10, 1) 100%
+      ), linear-gradient(to right, rgba(255, 215, 0, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 215, 0, 0.08) 1px, transparent 1px);
+  }
+
+  /* Add a visual indicator for draggable elements */
+  .cursor-grab {
+    cursor: grab;
+  }
+
+  .cursor-grabbing {
+    cursor: grabbing;
+  }
+
+  /* Add a subtle drag indicator animation */
+  @keyframes dragIndicator {
+    0% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .drag-indicator::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 2px;
+    animation: dragIndicator 2s ease-in-out infinite;
+  }
 }
 
 * {
@@ -326,7 +574,7 @@ a {
 
 /* Add extra small screen breakpoint */
 @media (min-width: 480px) {
-  .xs\:text-[4.5rem] {
+  .xs\:text-\[4\.5rem\] {
     font-size: 4.5rem;
   }
   .xs\:text-sm {
@@ -344,7 +592,7 @@ a {
     top: 58%;
   }
   \
-  .xs\:top-\[calc(100\%+30px)\] {
+  .xs\:top-\[calc$$100\%\+30px$$\] {
     top: calc(100% + 30px);
   }
   .xs\:w-\[240px\] {
@@ -357,31 +605,20 @@ a {
 
 /* Add 3xl breakpoint for ultra-wide screens */
 @media (min-width: 2560px) {
-  .3
-  xl\:text-[20rem] {
+  .xl\:text-\[20rem\] {
     font-size: 20rem;
   }
-  .3
-  xl\:w-\[560px\] {
+  .xl\:w-\[560px\] {
     width: 560px;
   }
-  .3
-  xl\:left-\[20\%\] {
+  .xl\:left-\[20\%\] {
     left: 20%;
   }
-  .3
-  xl\:right-\[20\%\] {
+  .xl\:right-\[20\%\] {
     right: 20%;
   }
-  .3
-  xl\:text-3xl {
+  .xl\:text-3xl {
     font-size: 1.875rem;
     line-height: 2.25rem;
   }
 }
-
-.font-rubik-bold {
-  font-family: 'Rubik', sans-serif;
-  font-weight: 700;
-}
-

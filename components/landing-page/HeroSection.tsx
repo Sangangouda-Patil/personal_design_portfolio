@@ -1,267 +1,340 @@
 "use client"
 
+import type React from "react"
+
 import { motion } from "framer-motion"
-import { Bayon, Rubik } from "next/font/google"
-import { useEffect, useState, useRef } from "react"
-import Image from "next/image"
+import { ArrowRight } from "lucide-react"
+import { useEffect, useState, useRef, useMemo } from "react"
+import { Spotlight } from "@/components/shared/Spotlight"
 
-// Load Bayon font
-const bayon = Bayon({
-  subsets: ["latin"],
-  weight: ["400"], // Bayon only has 400 weight
-})
+// Add the BlurText component implementation
+const buildKeyframes = (
+  from: Record<string, string | number>,
+  steps: Array<Record<string, string | number>>,
+): Record<string, Array<string | number>> => {
+  const keys = new Set<string>([...Object.keys(from), ...steps.flatMap((s) => Object.keys(s))])
 
-// Load Rubik font with bold weight
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["700"], // Bold weight
-})
+  const keyframes: Record<string, Array<string | number>> = {}
+  keys.forEach((k) => {
+    keyframes[k] = [from[k], ...steps.map((s) => s[k])]
+  })
+  return keyframes
+}
 
+type BlurTextProps = {
+  text?: string
+  delay?: number
+  className?: string
+  animateBy?: "words" | "letters"
+  direction?: "top" | "bottom"
+  threshold?: number
+  rootMargin?: string
+  animationFrom?: Record<string, string | number>
+  animationTo?: Array<Record<string, string | number>>
+  easing?: (t: number) => number
+  onAnimationComplete?: () => void
+  stepDuration?: number
+}
+
+const BlurText: React.FC<BlurTextProps> = ({
+  text = "",
+  delay = 200,
+  className = "",
+  animateBy = "words",
+  direction = "top",
+  threshold = 0.1,
+  rootMargin = "0px",
+  animationFrom,
+  animationTo,
+  easing = (t) => t,
+  onAnimationComplete,
+  stepDuration = 0.35,
+}) => {
+  const elements = animateBy === "words" ? text.split(" ") : text.split("")
+  const [inView, setInView] = useState(false)
+  const ref = useRef<HTMLParagraphElement>(null)
+
+  useEffect(() => {
+    if (!ref.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true)
+          observer.unobserve(ref.current as Element)
+        }
+      },
+      { threshold, rootMargin },
+    )
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [threshold, rootMargin])
+
+  const defaultFrom = useMemo(
+    () =>
+      direction === "top" ? { filter: "blur(10px)", opacity: 0, y: -50 } : { filter: "blur(10px)", opacity: 0, y: 50 },
+    [direction],
+  )
+
+  const defaultTo = useMemo(
+    () => [
+      {
+        filter: "blur(5px)",
+        opacity: 0.5,
+        y: direction === "top" ? 5 : -5,
+      },
+      { filter: "blur(0px)", opacity: 1, y: 0 },
+    ],
+    [direction],
+  )
+
+  const fromSnapshot = animationFrom ?? defaultFrom
+  const toSnapshots = animationTo ?? defaultTo
+
+  const stepCount = toSnapshots.length + 1
+  const totalDuration = stepDuration * (stepCount - 1)
+  const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)))
+
+ return (
+    <p ref={ref} className={`blur-text ${className} flex flex-wrap justify-center`}>
+      {elements.map((segment, index) => {
+        const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots)
+
+        const spanTransition: any = {
+          duration: totalDuration,
+          times,
+          delay: (index * delay) / 1000,
+        }
+        spanTransition.ease = easing
+
+        return (
+          <motion.span
+            key={index}
+            initial={fromSnapshot}
+            animate={inView ? animateKeyframes : fromSnapshot}
+            transition={spanTransition}
+            onAnimationComplete={index === elements.length - 1 ? onAnimationComplete : undefined}
+            style={{
+              display: "inline-block",
+              willChange: "transform, filter, opacity",
+            }}
+          >
+            {segment === " " ? "\u00A0" : segment}
+            {animateBy === "words" && index < elements.length - 1 && "\u00A0"}
+          </motion.span>
+        )
+      })}
+    </p>
+  )
+}
 
 const HeroSection = () => {
-  // State to track viewport size
-  const [isMobile, setIsMobile] = useState(false)
-  const [isUltraWideScreen, setIsUltraWideScreen] = useState(false)
+  // Add state to control the visibility of the hero section
+  const [showHero, setShowHero] = useState(false)
 
-  // Refs for positioning
-  const creativeRef = useRef<HTMLHeadingElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  // State to track when the logo and landing page are loaded
-  const [isPageReady, setIsPageReady] = useState(false)
-
-  // Update state based on window size
+  // Add a delay after component mount to show the hero section
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640)
-      setIsUltraWideScreen(window.innerWidth >= 1920)
-    }
-
-    // Set initial values
-    handleResize()
-
-    // Add event listener
-    window.addEventListener("resize", handleResize)
-
-    // Cleanup
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
-
-  useEffect(() => {
-    // Simulate logo and landing page load
     const timer = setTimeout(() => {
-      setIsPageReady(true)
-    }, 5000) // Updated delay to 5 seconds
+      setShowHero(true)
+    }, 5000) // 2-second delay
 
     return () => clearTimeout(timer)
   }, [])
 
+  // Enhanced media query checks for better responsiveness
+  const [screenSize, setScreenSize] = useState({
+    isMobile: false,
+    isTablet: false,
+    isDesktop: false,
+    isLargeDesktop: false,
+    isUltraWideScreen: false,
+  })
+
+  // Set up media query listeners with more breakpoints
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth
+      setScreenSize({
+        isMobile: width < 640,
+        isTablet: width >= 640 && width < 1024,
+        isDesktop: width >= 1024 && width < 1536,
+        isLargeDesktop: width >= 1536 && width < 2000,
+        isUltraWideScreen: width >= 2000,
+      })
+    }
+
+    // Initial check
+    checkScreenSize()
+
+    // Add listener for resize
+    window.addEventListener("resize", checkScreenSize)
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkScreenSize)
+  }, [])
+
+  // Words to cycle through
+  const rotatingWords = [
+    "SOFTWARE ENGINEER",
+    "VISUAL DESIGNER",
+    "UI/UX SPECIALIST",
+    "CREATIVE DEVELOPER",
+    "PROBLEM SOLVER",
+  ]
+
+  const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [forceRender, setForceRender] = useState(0) // Add this state to force re-render
+
+  // Function to cycle through words
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWordIndex((prevIndex) => (prevIndex + 1) % rotatingWords.length)
+      setForceRender((prev) => prev + 1) // Force re-render when word changes
+    }, 4000) // Change word every 4 seconds
+
+    return () => clearInterval(interval)
+  }, [rotatingWords.length])
+
   return (
     <div
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] pt-28 sm:pt-32 md:pt-36 lg:pt-40"
+      className={`relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-4 ${
+        showHero ? "opacity-100" : "opacity-0"
+      } transition-opacity duration-500`}
     >
-      {/* Main content container - removed section-container class to allow full width */}
-      <div className="w-full flex flex-col items-center mt-16 sm:mt-20 md:mt-24 lg:mt-28">
-        {/* Content wrapper for alignment with image overlay - increased max-width */}
-        <div ref={containerRef} className="relative w-full mx-auto">
-          {/* "CREATIVE" text with letter-specific positioning */}
-          <div className="relative">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isPageReady ? 1 : 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-4 text-center relative z-0 w-full"
-            >
-              <h1
-                ref={creativeRef}
-                className={`${bayon.className} text-[4.5rem] xs:text-[5.5rem] sm:text-[7.5rem] md:text-[10rem] lg:text-[13rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] text-[#5a5a5a] tracking-[0.08em] sm:tracking-[0.09em] md:tracking-[0.1em] leading-none w-full`}
-              >
-                <span className="relative inline-block">
-                  <span className="relative">C</span>
-                  <div
-                    className="
-                      absolute
-                      -bottom-6
-                      xs:-bottom-8
-                      sm:-bottom-10
-                      md:-bottom-14
-                      lg:-bottom-18
-                      xl:-bottom-22
-                      2xl:-bottom-26
-                      left-0
-                    "
-                  >
-                    <p
-                      className={`${bayon.className}
-                       text-[#5a5a5a] 
-                       text-xs xs:text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl 
-                       uppercase tracking-wide text-left`}
-                       style={{ transform: 'translateX(15%)' }} // Adjust the value to move right
-                      
-                    >
-                      
-                      DESIGNER
-                    </p>
-                  </div>
-                </span>
-                REATIV
-                <span className="relative inline-block">
-                  <span className="relative">E</span>
-                  <div
-                    className="
-                      absolute
-                      -bottom-6
-                      xs:-bottom-8
-                      sm:-bottom-10
-                      md:-bottom-14
-                      lg:-bottom-18
-                      xl:-bottom-22
-                      2xl:-bottom-26
-                      right-0
-                    "
-                  >
-                    <p
-                      className={`
-                        ${bayon.className}
-                        text-[#5a5a5a]
-                        text-xs xs:text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl
-                        uppercase tracking-wide text-right
-                      `}
-                      style={{ transform: 'translateX(-40%)' }} // Adjust the value to move left
-                      
-
-                    >
-                     ENGINEER
-                      
-                    </p>
-                  </div>
-                </span>
-              </h1>
-            </motion.div>
-          </div>
-
-          {/* Hero image - centered and overlapping with text - RESPONSIVE POSITIONING */}
-          <motion.div
-            className="absolute top-[50%] sm:top-[55%] md:top-[58%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] xs:w-[400px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[800px] 2xl:w-[900px] 3xl:w-[1000px] z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isPageReady ? 1 : 0 }}
-            transition={{ duration: 1, delay: 1.5, ease: "easein" }}
-          >
-            <div className="w-full aspect-[3/4] overflow-hidden relative">
-              <Image
-                src="/images/herosectionimage.webp"
-                alt="Creative professional portrait"
-                fill
-                priority
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                style={{ width: '100%', height: '100%' }}
-              />
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Adjusted spacer to position yellow ribbon with slight overlap */}
-        <div className="flex-grow min-h-[12vh] xs:min-h-[14vh] sm:min-h-[17vh] md:min-h-[20vh] lg:min-h-[22vh] xl:min-h-[24vh] 2xl:min-h-[27vh]"></div>
+      {/* Replace grid background with Spotlight */}
+      <div className="absolute inset-0 z-0">
+        <Spotlight />
       </div>
 
-      {/* Yellow Ribbon Banner - Adjusted to create slight overlap with image */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="
-          w-full 
-          relative
-          -mt-12      /* was -mt-4 */
-          xs:-mt-14     /* was xs:-mt-5 */
-          sm:-mt-16    /* was sm:-mt-6 */
-          md:-mt-18    /* was md:-mt-8 */
-          lg:-mt-20    /* was lg:-mt-10 */
-          xl:-mt-22    /* was xl:-mt-12 */
-          2xl:-mt-24   /* was 2xl:-mt-14 */
-          z-20
-        "
-      >
-        <div className="relative overflow-hidden">
-          {/* Main gold background */}
-          <div className="bg-[#ffd301]/90 py-3 sm:py-4 md:py-5 lg:py-6">
-            {/* Left fade gradient */}
-            <div className="absolute left-0 top-0 bottom-0 w-[15%] bg-gradient-to-r from-[#0a0a0a] to-transparent z-10"></div>
-            {/* Right fade gradient */}
-            <div className="absolute right-0 top-0 bottom-0 w-[15%] bg-gradient-to-l from-[#0a0a0a] to-transparent z-10"></div>
-           {/* Content with Rubik font */}
-           <div className="max-w-6xl mx-auto px-4 relative z-0">
-              <p
-                className={`
-                  ${rubik.className}
-                  text-[10px]       /* ↓ smaller default */
-                  xs:text-xs        /* ↓ reduce at xs */
-                  md:text-sm        /* ↓ reduce at md */
-                  lg:text-base      /* ↓ keep base at lg+ */
-                  xl:text-lg
-                  2xl:text-xl
-                  text-black
-                  font-bold
-                  text-center 
-                  max-w-[1600px] 
-                  mx-auto
-                  leading-wide
-                `}
-              >
-                Creating impactful, visually appealing designs and websites that
-                engage, connect, and drive conversions.
-              </p>
+      <div className="w-full max-w-[1400px] z-10 flex flex-col items-center justify-center text-center">
+        <div className="flex flex-col items-center w-full overflow-hidden">
+          {/* Main fixed heading - improved responsive sizing */}
+          <div className="w-full overflow-visible px-2">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="font-switzer-black text-[3rem] xs:text-[4.5rem] sm:text-[5rem] md:text-[8rem] lg:text-[10rem] xl:text-[12rem] 2xl:text-[14rem] text-white leading-none tracking-wider z-20 mx-auto"
+            >
+              CREATIVE
+            </motion.h1>
+          </div>
+
+          {/* Rotating words with improved responsive sizing */}
+          <div className="relative h-[2.5rem] xs:h-[3rem] sm:h-[3.5rem] md:h-[4rem] lg:h-[4.5rem] xl:h-[5rem] 2xl:h-[5.5rem] w-full flex items-center justify-center mt-0.5 xs:mt-1 sm:mt-1 md:mt-2 z-20">
+            <div key={forceRender} className="flex items-center justify-center absolute w-full">
+              <BlurText
+                text={rotatingWords[currentWordIndex]}
+                delay={100}
+                animateBy="letters"
+                direction="bottom"
+                className="font-switzer-extrabold text-[1rem] xs:text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] lg:text-[2.5rem] xl:text-[3rem] 2xl:text-[3.5rem] text-[#FFD700] tracking-wide"
+                animationFrom={{ filter: "blur(8px)", opacity: 0, y: 30 }}
+                animationTo={[
+                  { filter: "blur(4px)", opacity: 0.6, y: 15 },
+                  { filter: "blur(0px)", opacity: 1, y: 0 },
+                ]}
+                stepDuration={0.3}
+                easing={(t) => t * (2 - t)} // Ease out quad
+                onAnimationComplete={() => {
+                  console.log("Animation completed!")
+                }}
+              />
             </div>
           </div>
         </div>
-      </motion.div>
-      {/* CTA Button container - RESPONSIVE MARGINS AND PADDING */}
-      <div className="w-full section-container mx-auto px-4 mb-8 sm:mb-10 md:mb-12 mt-4 sm:mt-6 md:mt-8 lg:mt-10 z-20">
-        <div className="max-w-[280px] xs:max-w-[320px] sm:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl w-full mx-auto">
+
+        {/* Description text with improved responsive spacing */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          className="text-gray-300 mt-8 xs:mt-10 sm:mt-12 md:mt-14 lg:mt-16 max-w-xs xs:max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl text-center text-sm xs:text-base sm:text-lg md:text-xl z-20 relative font-switzer-regular"
+          style={{ opacity: 0.6 }}
+        >
+          I create sharp, stylish designs and websites that connect, convert, and add just the right amount of{" "}
+          <span className="font-switzer-bold whitespace-nowrap" style={{ color: "#f6cc0b", opacity: 0.8 }}>
+            {" "}
+            &apos;wow&apos;{" "}
+          </span>{" "}
+          without screaming for attention 🧲.
+        </motion.p>
+
+        {/* CTA Button container - MOVED CLOSER TO DESCRIPTION */}
+        <div className="w-full flex justify-center mt-6 xs:mt-8 sm:mt-10 md:mt-12 relative z-30">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-full"
+            style={{ opacity: 0.8 }}
           >
-            <div className="gradient-border-container w-full">
+            {/* Gradient border container */}
+            <div className="gradient-border-container rounded-full">
               <motion.button
-                className={`${bayon.className} bg-[#1a1a1a] text-white py-3 sm:py-4 md:py-5 px-4 sm:px-6 md:px-8 rounded-full flex items-center justify-between w-full text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="bg-[#1a1a1a] text-white rounded-full py-3 xs:py-4 sm:py-5 px-6 xs:px-8 sm:px-10 flex items-center gap-3 xs:gap-4 hover:bg-[#2a2a2a] transition-colors text-sm xs:text-base sm:text-lg md:text-xl"
                 onClick={() => {
-                  const contactSection = document.getElementById('contact');
+                  const contactSection = document.getElementById("contact")
                   if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: 'smooth' });
+                    contactSection.scrollIntoView({ behavior: "smooth" })
                   }
                 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <span className="pr-2">Transform Your Ideas Into Reality</span>
-                <div className="bg-[#FFD700] rounded-full p-1.5 sm:p-2 flex items-center justify-center flex-shrink-0">
-                  <svg
-                    width={isMobile ? "18" : isUltraWideScreen ? "32" : "24"}
-                    height={isMobile ? "18" : isUltraWideScreen ? "32" : "24"}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="text-black"
-                  >
-                    <path
-                      d="M5 12H19M19 12L12 5M19 12L12 19"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <span className="font-switzer-extrabold uppercase pl-1 xs:pl-2">LET&apos;S GET IN TOUCH</span>
+                <div className="bg-[#FFD700] rounded-full p-1.5 xs:p-2 flex items-center justify-center flex-shrink-0">
+                  <ArrowRight size={screenSize.isMobile ? 16 : 20} className="text-black" />
                 </div>
               </motion.button>
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Add perspective to the entire hero section */}
+      <style jsx global>{`        .perspective-[1000px] {
+          perspective: 1000px;
+        }
+        
+        /* Add xxs breakpoint for very small screens */
+        @media (min-width: 375px) {
+          .xxs\\:text-\\[3rem\\] { font-size: 3rem; }
+          .xxs\\:text-\\[0\\.875rem\\] { font-size: 0.875rem; }
+          .xxs\\:text-sm { font-size: 0.875rem; }
+          .xxs\\:h-\\[2\\.25rem\\] { height: 2.25rem; }
+          .xxs\\:mt-7 { margin-top: 1.75rem; }
+          .xxs\\:mt-5 { margin-top: 1.25rem; }
+          .xxs\\:py-2\\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+          .xxs\\:px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+          .xxs\\:gap-2\\.5 { gap: 0.625rem; }
+          .xxs\\:pl-1 { padding-left: 0.25rem; }
+          .xxs\\:p-1\\.5 { padding: 0.375rem; }
+          .xxs\\:max-w-xs { max-width: 20rem; }
+        }
+        
+        /* Additional responsive fixes for very small mobile devices */
+        @media (max-width: 360px) {
+          .font-shamgod-extrabold.text-\\[4rem\\] { font-size: 3.5rem; }
+          .relative.h-\\[2\\.5rem\\] { height: 2rem; }
+          .font-shamgod-bold.text-\\[1rem\\] { font-size: 0.875rem; }
+        }
+        
+        /* Fix for medium-sized phones */
+        @media (min-width: 361px) and (max-width: 413px) {
+          .font-shamgod-extrabold.text-\\[4rem\\] { font-size: 3.75rem; }
+        }
+        
+        /* Fix for larger phones but smaller than xs breakpoint */
+        @media (min-width: 414px) and (max-width: 639px) {
+          .font-shamgod-extrabold.text-\\[4rem\\] { font-size: 4rem; }
+        }
+        
+        /* Ensure button text is readable on small devices */
+        @media (max-width: 359px) {
+          .text-sm.xs\\:text-base { font-size: 0.75rem; }
+          .p-1\\.5.xs\\:p-2 { padding: 0.25rem; }
+        }
+      `}</style>
     </div>
   )
 }

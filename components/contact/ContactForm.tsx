@@ -161,7 +161,7 @@ const StepIndicator = ({ currentStep, totalSteps }: { currentStep: number; total
 // WhatsApp Redirect Component
 const WhatsAppRedirect = () => {
   // Replace with your actual WhatsApp number
-  const whatsappNumber = "1234567890"
+  const whatsappNumber = "8217672080"
 
   const openWhatsAppChat = () => {
     // You can add a pre-filled message if desired

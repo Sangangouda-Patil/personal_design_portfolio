@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useState } from "react"
+import ShinyText from "../shared/ShinyText"
 
 const ShatterSection = () => {
   // State to track if text has been revealed (once revealed, stays visible)
@@ -33,7 +34,9 @@ const ShatterSection = () => {
             className="mb-4 text-center"
           >
             <h2 className="text-3xl sm:text-5xl md:text-8xl font-bold font-times italic text-gray-400">
-              All{" "}
+              <span className="text-white">
+                <ShinyText text="All" speed={3} className="font-bold" />
+              </span>{" "}
               <span className="relative inline-block cursor-pointer" onMouseEnter={revealWonders}>
                 <span className="invisible">the wonders</span>
                 <span
@@ -44,7 +47,9 @@ const ShatterSection = () => {
                   the wonders
                 </span>
               </span>{" "}
-              we see,
+              <span className="text-white">
+                <ShinyText text="we see," speed={3} className="font-bold" />
+              </span>
             </h2>
           </motion.div>
 
@@ -56,7 +61,9 @@ const ShatterSection = () => {
             className="text-center"
           >
             <h2 className="text-3xl sm:text-5xl md:text-8xl font-bold font-times italic text-gray-400">
-              crafted by God, the{" "}
+              <span className="text-white">
+                <ShinyText text="crafted by God, the" speed={3} className="font-bold" />
+              </span>{" "}
               <span className="relative inline-block cursor-pointer" onMouseEnter={revealDesigner}>
                 <span className="invisible">Designer</span>
                 <span

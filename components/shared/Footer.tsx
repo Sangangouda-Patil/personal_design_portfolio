@@ -34,7 +34,7 @@ const Footer = () => {
                   <button
                     key={item.label}
                     onClick={() => scrollToSection(item.sectionId)}
-                    className="font-rubik font-bold text-white text-sm sm:text-xl md:text-2xl relative opacity-100 hover:opacity-80 transition-opacity duration-200"
+                    className="font-switzer-extrabold text-white text-sm sm:text-xl md:text-2xl relative opacity-100 hover:opacity-80 transition-opacity duration-200"
                   >
                     {item.label}
                   </button>
@@ -48,7 +48,7 @@ const Footer = () => {
       {/* Copyright text positioned below the box and centered */}
       <div className="section-container w-full">
         <div className="text-center">
-          <p className="font-rubik text-white/70 text-xs sm:text-sm">
+          <p className="font-switzer-extrabold text-white/70 text-xs sm:text-sm">
             © 2025 All Rights Reserved <span className="text-[#FFD700] font-times italic">Sangangouda Patil</span>
           </p>
         </div>

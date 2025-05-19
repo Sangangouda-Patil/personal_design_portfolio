@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Rubik } from 'next/font/google'
 import Image from "next/image"
+import ShinyText from "../shared/ShinyText"
 
 // Load Rubik font with bold weight
 const rubik = Rubik({
@@ -44,7 +45,9 @@ const WeaponsSection = () => {
                 {/* Heading on the left */}
                 <div className="mb-6 md:mb-0 text-center md:text-left">
                   <h2 className="text-3xl sm:text-4xl md:text-5xl">
-                    <span className={`${rubik.className} font-bold`}>Weapons</span>{" "}
+                    <span className={`${rubik.className} font-bold`}>
+                      <ShinyText text="Weapons" speed={3} className={`${rubik.className} font-bold`} />
+                    </span>{" "}
                     <span className="text-[#FFD700] font-bold font-times italic">I Use</span>{" "}
                     {/* <span className={`${rubik.className} font-bold`}>Use</span> */}
                   </h2>
@@ -80,6 +83,7 @@ const WeaponsSection = () => {
                             width={60}
                             height={60}
                             className="object-contain"
+                            style={{ width: "auto", height: "auto" }}
                           />
                         </div>
                       </a>

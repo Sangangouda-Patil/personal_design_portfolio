@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import type React from "react"
+
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import Image from 'next/image'
+import Image from "next/image"
 
-// Updated navigation items with section IDs instead of page routes
+// Navigation items with section IDs
 const leftNavItems = [
   { label: "Home", sectionId: "hero" },
   { label: "About", sectionId: "about" },
@@ -24,71 +26,184 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Create a stable handleScroll function with useCallback
-  const handleScroll = useCallback(() => {
-    // Update navbar background on scroll
-    if (window.scrollY > 50) {
-      setScrolled(true)
+  // Ref to track if we're currently handling a click
+  const isNavigatingRef = useRef(false)
+
+  // Ref to store intersection data
+  const intersectionDataRef = useRef<{ [key: string]: number }>({})
+
+  // Debug mode
+  const DEBUG = true
+
+  // Debug log function
+  const debugLog = (message: string, data?: any) => {
+    if (!DEBUG) return
+    if (data) {
+      console.log(`[Navbar] ${message}:`, data)
     } else {
-      setScrolled(false)
+      console.log(`[Navbar] ${message}`)
     }
+  }
 
-    // Find the current active section based on scroll position
-    const sections = [...leftNavItems, ...rightNavItems].map((item) => item.sectionId)
+  // Set up intersection observers for each section
+  useEffect(() => {
+    // Initialize intersection data
+    allNavItems.forEach((item) => {
+      intersectionDataRef.current[item.sectionId] = 0
+    })
 
-    // Get all section elements
-    const sectionElements = sections
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => section !== null)
+    // Create observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Skip if we're currently handling navigation
+        if (isNavigatingRef.current) return
 
-    // Find the section that is currently in view
-    if (sectionElements.length) {
-      const currentSection = sectionElements.reduce((closest, section) => {
-        const sectionTop = section.offsetTop
-        const scrollPosition = window.scrollY + 100 // Add offset for navbar height
+        // Update intersection data for each entry
+        entries.forEach((entry) => {
+          const targetId = entry.target.id
+          intersectionDataRef.current[targetId] = entry.intersectionRatio
 
-        if (scrollPosition >= sectionTop && (!closest || sectionTop > closest.offsetTop)) {
-          return section
+          debugLog(`Section ${targetId} intersection: ${entry.intersectionRatio.toFixed(4)}`)
+        })
+
+        // Find section with highest intersection ratio
+        let highestRatio = -1
+        let highestSection = null
+
+        allNavItems.forEach((item) => {
+          const ratio = intersectionDataRef.current[item.sectionId] || 0
+          if (ratio > highestRatio) {
+            highestRatio = ratio
+            highestSection = item
+          }
+        })
+
+        // Special case for when we're at the top of the page
+        if (window.scrollY < 100) {
+          const homeItem = allNavItems.find((item) => item.label === "Home")
+          if (homeItem) {
+            highestSection = homeItem
+            debugLog("Near top of page, forcing Home section")
+          }
         }
-        return closest
-      }, null as HTMLElement | null)
 
-      if (currentSection) {
-        // Find the nav item that corresponds to this section
-        const allNavItems = [...leftNavItems, ...rightNavItems]
-        const activeNav = allNavItems.find((item) => item.sectionId === currentSection.id)
-
-        if (activeNav && activeNav.label !== activeItem) {
-          setActiveItem(activeNav.label)
+        // Update active item if we found a section
+        if (highestSection && highestSection.label !== activeItem) {
+          debugLog(`Setting active item to ${highestSection.label} with ratio ${highestRatio.toFixed(4)}`)
+          setActiveItem(highestSection.label)
         }
+      },
+      {
+        // Adjust threshold to be more sensitive
+        // This creates 11 thresholds from 0 to 1.0
+        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
+      },
+    )
+
+    // Observe all sections
+    allNavItems.forEach((item) => {
+      const element = document.getElementById(item.sectionId)
+      if (element) {
+        observer.observe(element)
+        debugLog(`Observing section: ${item.sectionId}`)
+      } else {
+        debugLog(`WARNING: Section not found: ${item.sectionId}`)
+      }
+    })
+
+    // Clean up
+    return () => {
+      allNavItems.forEach((item) => {
+        const element = document.getElementById(item.sectionId)
+        if (element) {
+          observer.unobserve(element)
+        }
+      })
+    }
+  }, [activeItem]) // Include activeItem in dependencies
+
+  // Handle scroll for navbar background
+  useEffect(() => {
+    const handleScroll = () => {
+      // Update navbar background on scroll
+      if (window.scrollY > 50) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
       }
     }
-  }, [activeItem])
 
-  // Handle scroll effect and active section detection
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll)
-    // Call once to set initial active section
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    // Call once to set initial state
     handleScroll()
 
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [handleScroll]) // handleScroll is stable with useCallback
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
-  // Function to scroll to a section when nav item is clicked
-  const scrollToSection = (sectionId: string, label: string) => {
+  // Improved scroll to section function
+  const scrollToSection = (sectionId: string, label: string, e: React.MouseEvent) => {
+    // Stop event propagation to prevent parent elements from capturing the click
+    e.stopPropagation()
+
+    debugLog(`Clicked navigation: ${label} (${sectionId})`)
+
+    // First check if we're on the homepage
+    const isHomePage = window.location.pathname === "/" || window.location.pathname === ""
+
+    // If we're not on the homepage, redirect to homepage with hash
+    if (!isHomePage) {
+      debugLog(`Not on homepage, redirecting to /#${sectionId}`)
+      window.location.href = `/#${sectionId}`
+      return
+    }
+
+    // Set flag that we're handling navigation
+    isNavigatingRef.current = true
+
+    // Force active item immediately for better UX
+    setActiveItem(label)
+    debugLog(`Set active item to: ${label}`)
+
+    // Close mobile menu if open
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false)
+    }
+
+    // Try to find the element
     const element = document.getElementById(sectionId)
     if (element) {
-      // Set active item immediately for better UX
-      setActiveItem(label)
-
-      // Close mobile menu if open
-      setMobileMenuOpen(false)
+      debugLog(`Scrolling to section: ${sectionId}`)
 
       // Scroll to the section
       element.scrollIntoView({
         behavior: "smooth",
         block: "start",
       })
+
+      // Reset navigation flag after animation completes
+      setTimeout(() => {
+        isNavigatingRef.current = false
+      }, 1000)
+    } else {
+      console.warn(`Section with ID "${sectionId}" not found`)
+      debugLog(`WARNING: Section with ID "${sectionId}" not found`)
+
+      // Reset navigation flag
+      isNavigatingRef.current = false
+    }
+  }
+
+  // Prevent default behavior for navbar background clicks
+  const handleNavbarBackgroundClick = (e: React.MouseEvent) => {
+    // Only prevent default if the click is directly on the navbar background
+    // and not on a child element
+    if (e.target === e.currentTarget) {
+      e.preventDefault()
+      e.stopPropagation()
+      debugLog("Clicked navbar background, preventing default behavior")
     }
   }
 
@@ -96,8 +211,8 @@ const Navbar = () => {
   const renderNavItem = (item: { label: string; sectionId: string }) => (
     <button
       key={item.label}
-      onClick={() => scrollToSection(item.sectionId, item.label)}
-      className={`font-bold text-white text-lg relative ${
+      onClick={(e) => scrollToSection(item.sectionId, item.label, e)}
+      className={`font-switzer-extrabold text-white text-lg relative px-4 py-2 ${
         activeItem === item.label ? "opacity-100" : "opacity-70 hover:opacity-100"
       } transition-opacity duration-200`}
     >
@@ -116,8 +231,8 @@ const Navbar = () => {
   const renderMobileNavItem = (item: { label: string; sectionId: string }) => (
     <motion.button
       key={item.label}
-      onClick={() => scrollToSection(item.sectionId, item.label)}
-      className={`text-white text-xl py-4 relative ${
+      onClick={(e) => scrollToSection(item.sectionId, item.label, e)}
+      className={`font-switzer-extrabold text-white text-xl py-4 relative ${
         activeItem === item.label ? "opacity-100" : "opacity-70"
       } transition-opacity duration-200`}
       initial={{ opacity: 0, y: 10 }}
@@ -138,21 +253,24 @@ const Navbar = () => {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
+          onClick={handleNavbarBackgroundClick}
         >
           <div className="flex items-center justify-between relative">
             {/* Left navigation items */}
             <div className="flex items-center space-x-8 mr-16">{leftNavItems.map(renderNavItem)}</div>
 
             {/* Center space for logo */}
-            <div className="w-16 h-8 flex items-center justify-center">
-              <Link href="/">
-                <Image
-                  src="/icons/logo.webp"
-                  alt="Logo"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-contain"
-                />
+            <div className="w-16 h-8 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              <Link href="/" onClick={(e) => e.stopPropagation()}>
+                <div className="relative w-16 h-8">
+                  <Image
+                    src="/icons/logo.webp"
+                    alt="Logo"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-contain"
+                  />
+                </div>
               </Link>
             </div>
 
@@ -169,25 +287,31 @@ const Navbar = () => {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
+          onClick={handleNavbarBackgroundClick}
         >
           <div className="flex items-center justify-between">
             {/* Logo in the mobile navbar */}
-            <div className="w-16 h-8 flex items-center justify-center">
-              <Link href="/">
-                <Image
-                  src="/icons/logo.webp"
-                  alt="Logo"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-contain"
-                />
+            <div className="w-16 h-8 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              <Link href="/" onClick={(e) => e.stopPropagation()}>
+                <div className="relative w-16 h-8">
+                  <Image
+                    src="/icons/logo.webp"
+                    alt="Logo"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-contain"
+                  />
+                </div>
               </Link>
             </div>
 
             {/* Mobile menu button with proper X transformation */}
             <button
               className="text-white relative w-8 h-6 z-50"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setMobileMenuOpen(!mobileMenuOpen)
+              }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
               <div className="absolute inset-0 flex flex-col items-center justify-center">

@@ -56,7 +56,14 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
                 ease: "easeInOut",
               }}
             >
-              <Image src="/icons/logo.webp" alt="Logo" fill className="object-contain" priority />
+              <Image
+                src="/icons/logo.webp"
+                alt="Logo"
+                fill
+                className="object-contain"
+                priority
+                sizes="(max-width: 640px) 8rem, (max-width: 768px) 10rem, 12rem"
+              />
             </motion.div>
           </motion.div>
 

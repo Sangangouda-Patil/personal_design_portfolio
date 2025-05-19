@@ -6,7 +6,12 @@ import Image from "next/image"
 // Load Rubik font with semibold weight
 const rubikSemibold = Rubik({
   subsets: ["latin"],
-  weight: ["600"], // Semibold weight
+  weight: ["600", "700", "800"], // Added bold (700) and extra bold (800) weights
+})
+
+const rubikBold = Rubik({
+  subsets: ["latin"],
+  weight: ["700"], // Bold weight
 })
 
 const sliderItems = [
@@ -43,16 +48,16 @@ const InfiniteSlider = () => {
           {sliderItems.map((item, index) => (
             <div key={`slider-1-${index}`} className="flex items-center mx-14 sm:mx-20 md:mx-24">
               <div className="relative w-8 h-8 sm:w-10 sm:h-10">
-                <Image src="/icons/star.svg" alt="Star" fill className="object-contain" />
+                <Image src="/icons/sliderstar.png" alt="Star" fill className="object-contain" />
               </div>
               <span
-                className={`${rubikSemibold.className} text-black text-2xl sm:text-3xl md:text-4xl ml-8 whitespace-nowrap`}
+                className={`${rubikBold.className} text-black text-4xl sm:text-5xl md:text-6xl ml-8 whitespace-nowrap`}
               >
                 {item}
               </span>
-              <div className="relative w-8 h-8 sm:w-10 sm:h-10 ml-6">
-                <Image src="/icons/star.svg" alt="Star" fill className="object-contain" />
-              </div>
+              {/* <div className="relative w-8 h-8 sm:w-10 sm:h-10 ml-6">
+                <Image src="/icons/sliderstar.png" alt="Star" fill className="object-contain" />
+              </div> */}
             </div>
           ))}
         </div>
@@ -62,16 +67,16 @@ const InfiniteSlider = () => {
           {sliderItems.map((item, index) => (
             <div key={`slider-2-${index}`} className="flex items-center mx-14 sm:mx-20 md:mx-24">
               <div className="relative w-8 h-8 sm:w-10 sm:h-10">
-                <Image src="/icons/star.svg" alt="Star" fill className="object-contain" />
+                <Image src="/icons/sliderstar.png" alt="Star" fill className="object-contain" />
               </div>
               <span
-                className={`${rubikSemibold.className} text-black text-2xl sm:text-3xl md:text-4xl ml-8  whitespace-nowrap`}
+                className={`${rubikBold.className} text-black text-4xl sm:text-5xl md:text-6xl ml-8  whitespace-nowrap`}
               >
                 {item}
               </span>
-              <div className="relative w-8 h-8 sm:w-10 sm:h-10 ml-6 ">
+              {/* <div className="relative w-8 h-8 sm:w-10 sm:h-10 ml-6 ">
                 <Image src="/icons/star.svg" alt="Star" fill className="object-contain text-black" />
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
