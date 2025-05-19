@@ -111,9 +111,10 @@ const AboutSection = () => {
               {/* Clean, minimal bio with better spacing and typography - matching the reference */}
               <div className="mb-8 sm:mb-10">
                 <p className="font-switzer-regular text-gray-400 text-lg xs:text-xl sm:text-2xl leading-relaxed max-w-[500px] mx-auto md:mx-0">
-                  I'm <span className="text-gray-300">Sangangouda Patil</span>, a curious designer, casual PC gamer (IKYK 😂), and
-                  part-time backpacker with a love for good UI and great mountains. I've been helping brands to shape meaningful
-                  digital experiences as a <span className="text-gray-300">Design Executive</span> at Alphanumero.
+                  I&apos;m <span className="text-gray-300">Sangangouda Patil</span>, a curious designer, casual PC gamer
+                  (IKYK 😂), and part-time backpacker with a love for good UI and great mountains. I&apos;ve been
+                  helping brands to shape meaningful digital experiences as a{" "}
+                  <span className="text-gray-300">Design Executive</span> at Alphanumero.
                 </p>
               </div>
 

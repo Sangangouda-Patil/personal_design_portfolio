@@ -33,10 +33,10 @@ const Navbar = () => {
   const intersectionDataRef = useRef<{ [key: string]: number }>({})
 
   // Debug mode
-  const DEBUG = true
+  const DEBUG = false
 
   // Debug log function
-  const debugLog = (message: string, data?: any) => {
+  const debugLog = (message: string, data?: unknown) => {
     if (!DEBUG) return
     if (data) {
       console.log(`[Navbar] ${message}:`, data)
@@ -120,7 +120,7 @@ const Navbar = () => {
         }
       })
     }
-  }, [activeItem]) // Include activeItem in dependencies
+  }, [activeItem])
 
   // Handle scroll for navbar background
   useEffect(() => {
