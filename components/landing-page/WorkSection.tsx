@@ -2,17 +2,10 @@
 
 import type React from "react"
 import { motion } from "framer-motion"
-import { Rubik } from "next/font/google"
 import { Heart, Bookmark, ArrowRight } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
 import ShinyText from "../shared/ShinyText"
-
-// Load Rubik font with bold weight
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["700"], // Bold weight
-})
 
 const initialProjects = [
   {
@@ -103,7 +96,7 @@ const initialProjects = [
     id: 22,
     image: "/worksection/img9.webp",
   },
-];
+]
 
 const WorkSection: React.FC = () => {
   // State to track liked projects
@@ -321,7 +314,7 @@ const WorkSection: React.FC = () => {
       // Re-enable auto-scrolling after user interaction
       setTimeout(() => {
         setAutoScrollEnabled(true)
-      }, 5000)
+      }, 5000) // Wait a bit longer than the auto-scroll interval (4s + 1s buffer)
 
       // Cancel any ongoing animation
       if (animationRef.current !== null) {
@@ -483,24 +476,24 @@ const WorkSection: React.FC = () => {
     }
   }, [itemWidth, updateSliderPosition])
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const updateScreenSize = () => {
-      setIsMobile(window.innerWidth <= 768); // Example breakpoint for mobile
-    };
+      setIsMobile(window.innerWidth <= 768) // Example breakpoint for mobile
+    }
 
-    updateScreenSize(); // Set initial value
-    window.addEventListener("resize", updateScreenSize);
+    updateScreenSize() // Set initial value
+    window.addEventListener("resize", updateScreenSize)
 
-    return () => window.removeEventListener("resize", updateScreenSize);
-  }, []);
+    return () => window.removeEventListener("resize", updateScreenSize)
+  }, [])
 
   return (
     <section id="work" className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
       <div className="section-container">
-       {/* Centered Section Header with ShinyText effect */}
-       <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+        {/* Centered Section Header with ShinyText effect */}
+        <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
           <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
             <span className={`font-rubik-bold text-white`}>
               <ShinyText text="Graphic" speed={3} className={`font-rubik-bold`} />

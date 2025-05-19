@@ -1,17 +1,10 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { Rubik } from "next/font/google"
 import { useState, useCallback, useEffect, useRef } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import ShinyText from "../shared/ShinyText"
-
-// Load Rubik font with bold weight
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["700"], // Bold weight
-})
 
 // Testimonial data
 const testimonials = [
@@ -241,13 +234,13 @@ const TestimonialsSection = () => {
             },
           }}
         >
-          <img src="/icons/heartemoji.png" alt="Heart eyes emoji" className="w-full h-full object-contain" />
+          <Image src="/icons/heartemoji.png" alt="Heart eyes emoji" className="w-full h-full object-contain" />
         </motion.div>
       ))}
 
       <div className="section-container" style={{ position: "relative", zIndex: 1 }}>
-       {/* Centered Section Header with ShinyText effect */}
-       <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+        {/* Centered Section Header with ShinyText effect */}
+        <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
           <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
             <span className={`font-rubik-bold text-white`}>
               <ShinyText text="Voices of" speed={3} className={`font-rubik-bold`} />
@@ -255,7 +248,6 @@ const TestimonialsSection = () => {
             <span className="text-[#FFD700] font-bold font-times italic"> Satisfaction</span>
           </h2>
         </div>
-    
 
         {/* Mobile Testimonials (Single Card View) */}
         <div className="md:hidden mb-8 relative min-h-[300px]">
@@ -396,7 +388,9 @@ const TestimonialsSection = () => {
                         {/* Name and title */}
                         <div>
                           <h4 className="font-switzer-bold text-white">{testimonials[currentIndex].name}</h4>
-                          <p className="font-switzer-bold text-gray-400 text-base">{testimonials[currentIndex].title}</p>
+                          <p className="font-switzer-bold text-gray-400 text-base">
+                            {testimonials[currentIndex].title}
+                          </p>
                         </div>
                       </div>
                     </div>

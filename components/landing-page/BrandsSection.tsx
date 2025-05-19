@@ -1,16 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Rubik } from "next/font/google"
 import Image from "next/image"
 import ShinyText from "../shared/ShinyText"
-
-
-// Load Rubik font with bold weight
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["700"], // Bold weight
-})
 
 // Sample brand data with logos
 const brands = Array.from({ length: 13 }, (_, index) => ({
@@ -37,8 +28,8 @@ const BrandsSection = () => {
       <div className="section-container relative z-10">
         {/* Header with yellow accent - aligned left */}
         {/* Centered Section Header */}
-          {/* Centered Section Header with ShinyText effect */}
-          <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+        {/* Centered Section Header with ShinyText effect */}
+        <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
           <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
             <span className={`font-rubik-bold text-white`}>
               <ShinyText text="Worked" speed={3} className={`font-rubik-bold`} />

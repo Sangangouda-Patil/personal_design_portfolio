@@ -1,24 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Rubik } from "next/font/google"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import type React from "react"
 import Image from "next/image"
 import ShinyText from "../shared/ShinyText"
-
-// Add these keyframe animations for text effects
-const textRevealAnimation = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1 },
-}
-
-// Load Rubik font with bold weight
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["700"], // Bold weight
-})
 
 // Sample project data with 5 cards
 const highlightedProjects = [
@@ -48,7 +35,7 @@ const highlightedProjects = [
     category: "Coming Soon",
     year: "2025",
     image: "/discoverworksection/img6.webp",
-    slug: ""
+    slug: "",
   },
   {
     id: 4,
@@ -324,8 +311,8 @@ const DiscoverWork: React.FC = () => {
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] relative">
       <div className="section-container">
-       {/* Centered Section Header with ShinyText effect */}
-       <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
+        {/* Centered Section Header with ShinyText effect */}
+        <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
           <h2 className="text-6xl sm:text-7xl md:text-9xl text-center">
             <span className={`font-rubik-bold text-white`}>
               <ShinyText text="Featured" speed={3} className={`font-rubik-bold`} />
@@ -333,7 +320,6 @@ const DiscoverWork: React.FC = () => {
             <span className="text-[#FFD700] font-bold font-times italic"> Work</span>
           </h2>
         </div>
-      
 
         {/* Projects carousel with visible adjacent cards - full width container */}
         <div
@@ -487,7 +473,7 @@ const DiscoverWork: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            {/* Gradient border container
+            {/* Gradient border container - Commented out to remove unused button
             <div className="gradient-border-container rounded-full">
               <button
                 className="bg-[#1a1a1a] text-white rounded-full py-3 sm:py-4 md:py-5 px-6 sm:px-8 md:px-10 flex items-center gap-2 sm:gap-3 md:gap-4 hover:bg-[#2a2a2a] transition-colors text-base sm:text-lg md:text-xl group"
