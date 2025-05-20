@@ -47,6 +47,9 @@ const Navbar = () => {
 
   // Set up intersection observers for each section
   useEffect(() => {
+    // Wait for DOM to be ready
+    if (typeof window === "undefined") return
+
     // Initialize intersection data
     allNavItems.forEach((item) => {
       intersectionDataRef.current[item.sectionId] = 0
@@ -100,16 +103,18 @@ const Navbar = () => {
       },
     )
 
-    // Observe all sections
-    allNavItems.forEach((item) => {
-      const element = document.getElementById(item.sectionId)
-      if (element) {
-        observer.observe(element)
-        debugLog(`Observing section: ${item.sectionId}`)
-      } else {
-        debugLog(`WARNING: Section not found: ${item.sectionId}`)
-      }
-    })
+    // Observe all sections with a delay to ensure DOM is ready
+    setTimeout(() => {
+      allNavItems.forEach((item) => {
+        const element = document.getElementById(item.sectionId)
+        if (element) {
+          observer.observe(element)
+          debugLog(`Observing section: ${item.sectionId}`)
+        } else {
+          debugLog(`WARNING: Section not found: ${item.sectionId}`)
+        }
+      })
+    }, 500)
 
     // Clean up
     return () => {
@@ -124,6 +129,8 @@ const Navbar = () => {
 
   // Handle scroll for navbar background
   useEffect(() => {
+    if (typeof window === "undefined") return
+
     const handleScroll = () => {
       // Update navbar background on scroll
       if (window.scrollY > 50) {
@@ -143,9 +150,28 @@ const Navbar = () => {
     }
   }, [])
 
+  // Handle body scroll lock when mobile menu is open
+  useEffect(() => {
+    if (typeof document === "undefined") return
+
+    if (mobileMenuOpen) {
+      // Lock scroll
+      document.body.style.overflow = "hidden"
+    } else {
+      // Unlock scroll
+      document.body.style.overflow = ""
+    }
+
+    return () => {
+      // Ensure scroll is unlocked when component unmounts
+      document.body.style.overflow = ""
+    }
+  }, [mobileMenuOpen])
+
   // Improved scroll to section function
   const scrollToSection = (sectionId: string, label: string, e: React.MouseEvent) => {
     // Stop event propagation to prevent parent elements from capturing the click
+    e.preventDefault()
     e.stopPropagation()
 
     debugLog(`Clicked navigation: ${label} (${sectionId})`)
@@ -318,6 +344,7 @@ const Navbar = () => {
             <button
               className="text-white relative w-8 h-6 z-50"
               onClick={(e) => {
+                e.preventDefault()
                 e.stopPropagation()
                 setMobileMenuOpen(!mobileMenuOpen)
               }}
@@ -354,13 +381,13 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/95 z-40 pt-24 px-6 md:hidden"
+            className="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex flex-col items-center">{allNavItems.map(renderMobileNavItem)}</div>
+            <div className="flex flex-col items-center space-y-6">{allNavItems.map(renderMobileNavItem)}</div>
           </motion.div>
         )}
       </AnimatePresence>
