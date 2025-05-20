@@ -130,6 +130,18 @@ const BlurText: React.FC<BlurTextProps> = ({
 const HeroSection = () => {
   // Add state to control the visibility of the hero section
   const [showHero, setShowHero] = useState(false)
+  // Debug mode for logging
+  const DEBUG = true
+
+  // Debug log function
+  const debugLog = (message: string, data?: unknown) => {
+    if (!DEBUG) return
+    if (data) {
+      console.log(`[HeroSection] ${message}:`, data)
+    } else {
+      console.log(`[HeroSection] ${message}`)
+    }
+  }
 
   // Add a delay after component mount to show the hero section
   useEffect(() => {
@@ -194,6 +206,79 @@ const HeroSection = () => {
     return () => clearInterval(interval)
   }, [rotatingWords.length])
 
+  // Improved function to handle contact button click
+  const handleContactButtonClick = () => {
+    debugLog("Contact button clicked")
+
+    // First, try to find the contact section by ID
+    const contactSection = document.getElementById("contact")
+
+    if (contactSection) {
+      debugLog("Found contact section by ID")
+
+      // Add a longer delay for mobile devices to ensure proper scrolling
+      setTimeout(() => {
+        try {
+          contactSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          })
+          debugLog("Scrolling to contact section")
+        } catch (error) {
+          debugLog("Error scrolling to contact section", error)
+        }
+      }, 100)
+    } else {
+      debugLog("Contact section not found by ID")
+
+      // Fallback: try to find the section by its class structure
+      const fallbackContactSection = document.querySelector("section#contact, section[id='contact']")
+
+      if (fallbackContactSection) {
+        debugLog("Found contact section by selector")
+
+        // If found, add ID if missing and scroll to it
+        if (!fallbackContactSection.id) {
+          fallbackContactSection.id = "contact"
+          debugLog("Added ID to contact section")
+        }
+
+        setTimeout(() => {
+          try {
+            fallbackContactSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            })
+            debugLog("Scrolling to contact section (fallback)")
+          } catch (error) {
+            debugLog("Error scrolling to contact section (fallback)", error)
+          }
+        }, 100)
+      } else {
+        // Last resort: try to find any section that might be the contact section
+        debugLog("Trying last resort to find contact section")
+        const lastSection = document.querySelector("section:last-of-type")
+
+        if (lastSection) {
+          debugLog("Using last section as fallback")
+          setTimeout(() => {
+            try {
+              lastSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              })
+              debugLog("Scrolling to last section as fallback")
+            } catch (error) {
+              debugLog("Error scrolling to last section", error)
+            }
+          }, 100)
+        } else {
+          debugLog("Could not find any suitable section to scroll to")
+        }
+      }
+    }
+  }
+
   return (
     <div
       id="hero"
@@ -237,7 +322,7 @@ const HeroSection = () => {
                 stepDuration={0.3}
                 easing={(t) => t * (2 - t)} // Ease out quad
                 onAnimationComplete={() => {
-                  console.log("Animation completed!")
+                  debugLog("Animation completed!")
                 }}
               />
             </div>
@@ -272,23 +357,7 @@ const HeroSection = () => {
             <div className="gradient-border-container rounded-full">
               <motion.button
                 className="bg-[#1a1a1a] text-white rounded-full py-3 xs:py-4 sm:py-5 px-6 xs:px-8 sm:px-10 flex items-center gap-3 xs:gap-4 hover:bg-[#2a2a2a] transition-colors text-sm xs:text-base sm:text-lg md:text-xl"
-                onClick={() => {
-                  const contactSection = document.getElementById("contact")
-                  if (contactSection) {
-                    // Add a longer delay for mobile devices to ensure proper scrolling
-                    setTimeout(() => {
-                      contactSection.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      })
-                    }, 100)
-
-                    // Log for debugging
-                    console.log("Scrolling to contact section")
-                  } else {
-                    console.error("Contact section not found")
-                  }
-                }}
+                onClick={handleContactButtonClick}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
