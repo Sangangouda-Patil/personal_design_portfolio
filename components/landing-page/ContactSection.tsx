@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { Instagram, Twitter, Github, Linkedin } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Rubik } from "next/font/google"
 import { FaBehance } from "react-icons/fa"
@@ -60,8 +60,30 @@ const ContactSection = () => {
     router.push("/contact")
   }
 
+  useEffect(() => {
+    // Log that the section is mounted
+    console.log("Contact section mounted with ID: contact")
+
+    // Make sure the section has the correct ID - this is more direct
+    document.querySelectorAll("section").forEach((section) => {
+      // Check if this is the contact section by looking at its content
+      if (
+        section.innerHTML.includes("Say Hello") &&
+        section.innerHTML.includes("Grab a ☕️") &&
+        section.id !== "contact"
+      ) {
+        section.id = "contact"
+        console.log("Contact section ID explicitly set to 'contact'")
+      }
+    })
+  }, [])
+
   return (
-    <section id="contact" className={`py-12 sm:py-16 bg-[#0a0a0a] ${rubik.className}`}>
+    <section
+      id="contact"
+      data-section="contact"
+      className={`py-12 sm:py-16 bg-[#0a0a0a] ${rubik.className} contact-section`}
+    >
       <div className="section-container">
         {/* First row */}
         <div className="grid grid-cols-12 gap-4 sm:gap-6 mb-4 sm:mb-6">
@@ -112,7 +134,7 @@ const ContactSection = () => {
                 onMouseLeave={() => setIsSayHelloHovered(false)}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-switzer-extrabold text-white flex items-center">
-                  Say Hello On WhatsApp<span className="ml-2"> 👋 </span>
+                  Say Hello <span className="ml-2">👋</span>
                 </h3>
 
                 {/* Conditional rendering of arrow or WhatsApp icon */}

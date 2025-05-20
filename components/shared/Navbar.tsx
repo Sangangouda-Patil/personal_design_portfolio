@@ -15,7 +15,7 @@ const leftNavItems = [
 
 const rightNavItems = [
   { label: "Work", sectionId: "work" },
-  { label: "Contact", sectionId: "contact" },
+  { label: "Contact", sectionId: "contact" }, // This should match the ID in ContactSection
 ]
 
 // Combine all nav items for mobile menu
@@ -190,6 +190,15 @@ const Navbar = () => {
     } else {
       console.warn(`Section with ID "${sectionId}" not found`)
       debugLog(`WARNING: Section with ID "${sectionId}" not found`)
+
+      // Fallback for contact section - try to scroll to the bottom of the page
+      if (sectionId === "contact") {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: "smooth",
+        })
+        console.log("Fallback: Scrolling to bottom of page for contact section")
+      }
 
       // Reset navigation flag
       isNavigatingRef.current = false

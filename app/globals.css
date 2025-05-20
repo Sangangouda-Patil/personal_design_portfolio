@@ -591,8 +591,7 @@ a {
   .xs\:top-\[58\%\] {
     top: 58%;
   }
-  \
-  .xs\:top-\[calc$$100\%\+30px$$\] {
+  .xs\:top-\[calc\(100%\+30px\)\] {
     top: calc(100% + 30px);
   }
   .xs\:w-\[240px\] {
@@ -621,4 +620,19 @@ a {
     font-size: 1.875rem;
     line-height: 2.25rem;
   }
+}
+
+/* Add these styles at the end of the file to improve scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure sections have proper scroll margins */
+section[id] {
+  scroll-margin-top: 100px;
+}
+
+/* Ensure the contact section is always visible */
+#contact {
+  min-height: 50vh;
 }

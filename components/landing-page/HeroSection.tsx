@@ -209,9 +209,65 @@ const HeroSection = () => {
   // Improved function to handle contact button click
   const handleContactButtonClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    const contactSection = document.getElementById("contact")
+    console.log("Contact button clicked")
+
+    // First try: Find by ID
+    let contactSection = document.getElementById("contact")
+
+    // Second try: Find by data attribute
+    if (!contactSection) {
+      contactSection = document.querySelector("[data-section='contact']")
+      console.log("Trying to find contact section by data attribute")
+    }
+
+    // Third try: Find by class
+    if (!contactSection) {
+      contactSection = document.querySelector(".contact-section")
+      console.log("Trying to find contact section by class")
+    }
+
+    // Fourth try: Find by content
+    if (!contactSection) {
+      document.querySelectorAll("section").forEach((section) => {
+        if (section.innerHTML.includes("Say Hello") && section.innerHTML.includes("Grab a ☕️")) {
+          contactSection = section
+          console.log("Found contact section by content")
+        }
+      })
+    }
+
     if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" })
+      console.log("Contact section found, scrolling to it")
+
+      // Force ID if not already set
+      if (contactSection.id !== "contact") {
+        contactSection.id = "contact"
+        console.log("Set contact section ID to 'contact'")
+      }
+
+      // Get the position of the contact section
+      const rect = contactSection.getBoundingClientRect()
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const offsetTop = rect.top + scrollTop
+
+      // Scroll to the contact section
+      window.scrollTo({
+        top: offsetTop,
+        behavior: "smooth",
+      })
+
+      // Backup method
+      setTimeout(() => {
+        contactSection?.scrollIntoView({ behavior: "smooth" })
+        console.log("Backup scroll method executed")
+      }, 100)
+    } else {
+      console.log("Contact section not found, scrolling to bottom of page")
+      // Last resort: scroll to bottom of page
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      })
     }
   }
 

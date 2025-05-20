@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { GraduationCap, Briefcase, Calendar, ChevronDown, Building, Award } from "lucide-react"
+import { GraduationCap, Briefcase, Calendar, Building } from "lucide-react"
 import ShinyText from "../shared/ShinyText"
 
 // Education data
@@ -12,21 +12,18 @@ const educationData = [
     title: "Bachelor in Computer Science",
     institution: "KLS Gogte Institute of Technology, Belagavi",
     period: "Dec 2021 - May 2024",
-    achievements: "Dean's List, Best Project Award",
   },
   {
     id: 2,
     title: "Diploma in Computer Science",
     institution: "MLBP College, Belagavi",
     period: "2017-2021",
-    achievements: "First Class with Distinction",
   },
   {
     id: 3,
     title: "Primary Education",
     institution: "BEMS School, Belagavi",
     period: "2007-2017",
-    achievements: "School Topper, Science Olympiad Winner",
   },
 ]
 
@@ -37,32 +34,24 @@ const careerData = [
     title: "Design Executive",
     company: "Alphanumero",
     period: "DEC 2024 - Present",
-    achievements: "Redesigned flagship product increasing user engagement by 40%",
   },
   {
     id: 2,
     title: "UI/UX Designer",
     company: "Creatorships",
     period: "MAY 2024 - DEC 2024",
-    achievements: "Created design system used across 5 major projects",
   },
   {
     id: 3,
     title: "Web Development Intern",
     company: "Infynow Software Solutions",
     period: "MAY 2023 - JUL 2023",
-    achievements: "Optimized site performance improving load times by 30%",
   },
 ]
 
 const EducationCareerSection = () => {
   // State to track active tab
   const [activeTab, setActiveTab] = useState<"education" | "career">("education")
-  const [expandedCard, setExpandedCard] = useState<number | null>(null)
-
-  const toggleCard = (id: number) => {
-    setExpandedCard(expandedCard === id ? null : id)
-  }
 
   // Animation variants
   const containerVariants = {
@@ -85,16 +74,6 @@ const EducationCareerSection = () => {
         delay: i * 0.1,
       },
     }),
-  }
-
-  const expandVariants = {
-    collapsed: { height: 0, opacity: 0, marginTop: 0 },
-    expanded: { height: "auto", opacity: 1, marginTop: 12, transition: { duration: 0.3 } },
-  }
-
-  const iconVariants = {
-    collapsed: { rotate: 0 },
-    expanded: { rotate: 180, transition: { duration: 0.3 } },
   }
 
   const tabVariants = {
@@ -152,24 +131,11 @@ const EducationCareerSection = () => {
 
                   {/* Title and details */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-gray-300 transition-colors duration-300 pr-2 truncate">
-                        {item.title}
-                      </h3>
-                      <motion.button
-                        variants={iconVariants}
-                        initial="collapsed"
-                        animate={expandedCard === item.id ? "expanded" : "collapsed"}
-                        onClick={() => toggleCard(item.id)}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center text-gray-400 hover:text-white transition-colors flex-shrink-0"
-                      >
-                        <ChevronDown size={14} className="sm:hidden" />
-                        <ChevronDown size={16} className="hidden sm:block" />
-                      </motion.button>
-                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-gray-300 transition-colors duration-300 pr-2">
+                      {item.title}
+                    </h3>
 
                     <div className="flex items-center mt-1 sm:mt-2 text-gray-300">
-                      {/* Fixed the Building icon size to be consistent */}
                       <Building size={14} className="text-gray-400 mr-2 flex-shrink-0" />
                       <span className="truncate">
                         {activeTab === "education"
@@ -189,30 +155,6 @@ const EducationCareerSection = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Expandable content - Only achievements */}
-                <AnimatePresence>
-                  {expandedCard === item.id && (
-                    <motion.div
-                      variants={expandVariants}
-                      initial="collapsed"
-                      animate="expanded"
-                      exit="collapsed"
-                      className="overflow-hidden"
-                    >
-                      <div className="border-t border-gray-800 pt-3 sm:pt-4 mt-3 sm:mt-4">
-                        <div className="flex items-start">
-                          <Award size={12} className="text-gray-400 mr-2 mt-1 sm:hidden" />
-                          <Award size={16} className="text-gray-400 mr-2 mt-1 hidden sm:block" />
-                          <div className="text-gray-400 text-xs sm:text-sm">
-                            <p className="font-medium text-gray-300 mb-1">Achievements</p>
-                            <p>{item.achievements}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
             </div>
           </motion.div>

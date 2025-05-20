@@ -489,8 +489,33 @@ const WorkSection: React.FC = () => {
     return () => window.removeEventListener("resize", updateScreenSize)
   }, [])
 
+  // Add a useEffect to ensure the work section has the correct ID
+  useEffect(() => {
+    // Log that the section is mounted
+    console.log("Work section mounted with ID: work")
+
+    // Make sure the section has the correct ID - this is more direct
+    const workSection = document.getElementById("work")
+    if (workSection) {
+      console.log("Work section already has correct ID")
+    } else {
+      // Try to find the work section by content
+      document.querySelectorAll("section").forEach((section) => {
+        if (section.innerHTML.includes("Graphic") && section.innerHTML.includes("Work") && section.id !== "work") {
+          section.id = "work"
+          console.log("Work section ID explicitly set to 'work'")
+        }
+      })
+    }
+  }, [])
+
+  // Keep the return statement with the explicit ID
   return (
-    <section id="work" className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
+    <section
+      id="work"
+      data-section="work"
+      className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden work-section"
+    >
       <div className="section-container">
         {/* Centered Section Header with ShinyText effect */}
         <div className="flex flex-col items-center mb-10 sm:mb-12 md:mb-16">
