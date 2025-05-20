@@ -38,7 +38,7 @@ const highlightedProjects = [
   },
   {
     id: 4,
-    client: "AM international",
+    client: "AM internationa",
     title: "UI, UX",
     category: "Landing Page",
     year: "2023",
@@ -91,14 +91,14 @@ const DiscoverWork: React.FC = () => {
     setIsAnimating(true)
     setCurrentIndex((prev) => (prev === 0 ? highlightedProjects.length - 1 : prev - 1))
     setTimeout(() => setIsAnimating(false), 500) // Reduced from 700ms to 500ms for faster response
-  }, [isAnimating, highlightedProjects.length])
+  }, [isAnimating])
 
   const goToNext = useCallback(() => {
     if (isAnimating) return
     setIsAnimating(true)
     setCurrentIndex((prev) => (prev === highlightedProjects.length - 1 ? 0 : prev + 1))
     setTimeout(() => setIsAnimating(false), 500) // Reduced from 700ms to 500ms for faster response
-  }, [isAnimating, highlightedProjects.length])
+  }, [isAnimating])
 
   // Add keyboard navigation
   useEffect(() => {
