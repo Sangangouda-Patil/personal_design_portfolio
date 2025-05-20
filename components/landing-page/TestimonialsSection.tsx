@@ -234,7 +234,13 @@ const TestimonialsSection = () => {
             },
           }}
         >
-          <Image src="/icons/heartemoji.png" alt="Heart eyes emoji" className="w-full h-full object-contain" />
+          <Image
+            src="/icons/heartemoji.png"
+            alt="Heart eyes emoji"
+            width={50}
+            height={50}
+            className="w-full h-full object-contain"
+          />
         </motion.div>
       ))}
 

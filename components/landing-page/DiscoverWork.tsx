@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect, useRef, useCallback } from "react"
 import type React from "react"
@@ -16,8 +16,7 @@ const highlightedProjects = [
     category: "WEB & MOBILE",
     year: "2025",
     slug: "https://communion-hub-fxry.vercel.app/",
-    // The image property is ready for you to add your own images
-    image: "/discoverworksection/img1.webp", // You'll add your own image path here
+    image: "/discoverworksection/img1.webp",
   },
   {
     id: 2,
@@ -25,7 +24,7 @@ const highlightedProjects = [
     title: "UI, UX & Branding",
     category: "WEB",
     year: "2024",
-    image: "/discoverworksection/img2.webp", // You'll add your own image path here
+    image: "/discoverworksection/img2.webp",
     slug: "https://creatorships.vercel.app/",
   },
   {
@@ -39,11 +38,11 @@ const highlightedProjects = [
   },
   {
     id: 4,
-    client: "AM internationa",
+    client: "AM international",
     title: "UI, UX",
     category: "Landing Page",
     year: "2023",
-    image: "/discoverworksection/img4.webp", // You'll add your own image path here
+    image: "/discoverworksection/img4.webp",
     slug: "https://aminternational.sg/",
   },
   {
@@ -52,7 +51,7 @@ const highlightedProjects = [
     title: "UI, UX",
     category: "Coming Soon",
     year: "2025",
-    image: "/discoverworksection/img5.webp", // You'll add your own image path here
+    image: "/discoverworksection/img5.webp",
     slug: "https://babymd.in/",
   },
   {
@@ -61,7 +60,7 @@ const highlightedProjects = [
     title: "UI, UX",
     category: "Landing Page",
     year: "2023",
-    image: "/discoverworksection/img3.webp", // You'll add your own image path here
+    image: "/discoverworksection/img3.webp",
     slug: "https://www.figma.com/proto/qraBc63gpJ8WYilKdrPLrB/Design-Flow-Landing-Page?page-id=271%3A502&node-id=271-1346&viewport=460%2C65%2C0.15&t=6Fkk5TddC4f3S6eO-1&scaling=min-zoom&content-scaling=fixed",
   },
 ]
@@ -83,21 +82,23 @@ const DiscoverWork: React.FC = () => {
   const [windowWidth, setWindowWidth] = useState(0)
   // Track if animation is in progress
   const [isAnimating, setIsAnimating] = useState(false)
+  // Track if device is mobile
+  const [isMobile, setIsMobile] = useState(false)
 
   // Add navigation functions
   const goToPrevious = useCallback(() => {
     if (isAnimating) return
     setIsAnimating(true)
     setCurrentIndex((prev) => (prev === 0 ? highlightedProjects.length - 1 : prev - 1))
-    setTimeout(() => setIsAnimating(false), 700)
-  }, [isAnimating])
+    setTimeout(() => setIsAnimating(false), 500) // Reduced from 700ms to 500ms for faster response
+  }, [isAnimating, highlightedProjects.length])
 
   const goToNext = useCallback(() => {
     if (isAnimating) return
     setIsAnimating(true)
     setCurrentIndex((prev) => (prev === highlightedProjects.length - 1 ? 0 : prev + 1))
-    setTimeout(() => setIsAnimating(false), 700)
-  }, [isAnimating])
+    setTimeout(() => setIsAnimating(false), 500) // Reduced from 700ms to 500ms for faster response
+  }, [isAnimating, highlightedProjects.length])
 
   // Add keyboard navigation
   useEffect(() => {
@@ -118,6 +119,7 @@ const DiscoverWork: React.FC = () => {
     const handleResize = () => {
       const width = window.innerWidth
       setWindowWidth(width)
+      setIsMobile(width < 768)
       if (carouselRef.current) {
         setCarouselWidth(carouselRef.current.offsetWidth)
       }
@@ -189,20 +191,20 @@ const DiscoverWork: React.FC = () => {
   const prevIndex = currentIndex === 0 ? highlightedProjects.length - 1 : currentIndex - 1
   const nextIndex = currentIndex === highlightedProjects.length - 1 ? 0 : currentIndex + 1
 
-  // Custom transition for smoother animations
+  // Optimized transitions for better mobile performance
   const smoothTransition = {
-    type: "spring",
-    stiffness: 180, // Reduced from 300 for smoother motion
-    damping: 25, // Reduced from 30 for smoother motion
-    mass: 1.2, // Increased from 1 for more inertia
-    duration: 0.6, // Added explicit duration
+    type: isMobile ? "tween" : "spring",
+    stiffness: isMobile ? undefined : 150, // Reduced from 180
+    damping: isMobile ? undefined : 20, // Reduced from 25
+    mass: isMobile ? undefined : 1, // Reduced from 1.2
+    duration: isMobile ? 0.3 : 0.5, // Shorter duration on mobile
   }
 
   // Separate transition for opacity and filter for smoother blending
   const fadeTransition = {
-    opacity: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
-    filter: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
-    scale: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
+    opacity: { duration: isMobile ? 0.3 : 0.5, ease: "easeOut" },
+    filter: { duration: isMobile ? 0.3 : 0.5, ease: "easeOut" },
+    scale: { duration: isMobile ? 0.3 : 0.5, ease: "easeOut" },
   }
 
   // Calculate transform values for each card
@@ -223,33 +225,28 @@ const DiscoverWork: React.FC = () => {
         scale: 1,
         x: isDragging ? dragX : 0,
         filter: "blur(0px)",
-        transition: {
-          scale: {
-            duration: 0.3,
-          },
-        },
       }
     } else if (index === prevIndex) {
       return {
         zIndex: 5,
-        opacity: 0.1, // Slightly increased opacity
-        scale: 0.85, // Slightly larger scale
+        opacity: isMobile ? 0 : 0.1, // Hide on mobile for better performance
+        scale: 0.85,
         x: isDragging ? -sideCardOffset + dragX : -sideCardOffset,
-        filter: "blur(3px)", // Slightly less blur
+        filter: "blur(3px)",
       }
     } else if (index === nextIndex) {
       return {
         zIndex: 5,
-        opacity: 0.1, // Slightly increased opacity
-        scale: 0.85, // Slightly larger scale
+        opacity: isMobile ? 0 : 0.1, // Hide on mobile for better performance
+        scale: 0.85,
         x: isDragging ? sideCardOffset + dragX : sideCardOffset,
-        filter: "blur(3px)", // Slightly less blur
+        filter: "blur(3px)",
       }
     } else {
       return {
         zIndex: 1,
         opacity: 0,
-        scale: 0.75, // Slightly larger scale
+        scale: 0.75,
         x: index < currentIndex ? -carouselWidth * 1.5 : carouselWidth * 1.5,
         filter: "blur(6px)",
       }
@@ -339,98 +336,113 @@ const DiscoverWork: React.FC = () => {
         >
           <div className="absolute inset-0 flex items-center justify-center">
             {highlightedProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                className="absolute group cursor-pointer"
-                style={{ width: getCardWidth() }}
-                initial={false}
-                animate={getCardStyle(index)}
-                transition={{
-                  x: smoothTransition,
-                  ...fadeTransition,
-                }}
-              >
-                {/* Card with enhanced styling and gradient border */}
-                <div className="overflow-hidden rounded-2xl sm:rounded-3xl flex flex-col relative h-full">
-                  {/* Gradient border */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/10 to-transparent rounded-2xl sm:rounded-3xl p-[1px]"></div>
-                  <div className="relative z-10 flex flex-col w-full h-full bg-[#111111] rounded-2xl sm:rounded-3xl overflow-hidden">
-                    {/* Image placeholder area with gradient and hover effect */}
-                    <div
-                      className="w-full rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden transition-all duration-500"
-                      style={{
-                        height: getImageHeight(),
-                        background: project.image ? "transparent" : "linear-gradient(135deg, #111111 0%, #333333 100%)",
-                      }}
-                    >
-                      {project.image ? (
-                        <Image
-                          src={project.image || "/placeholder.svg"}
-                          alt={project.client}
-                          fill
-                          className="object-cover rounded-t-2xl sm:rounded-t-3xl transition-transform duration-700 hover:scale-105"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-white/30 text-base sm:text-lg font-rubik">Project Preview</span>
-                        </div>
-                      )}
-
-                      {/* Category badge */}
-                      <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-black/70 backdrop-blur-sm px-2 sm:px-3 py-1 rounded-full">
-                        <span className="text-white text-xs font-rubik">{project.category}</span>
-                      </div>
-                    </div>
-
-                    {/* Text content area with simplified hover effects */}
-                    <div className="px-3 xs:px-4 sm:px-6 md:px-8 py-3 xs:py-4 sm:py-6 bg-[#111111] flex-grow flex flex-col">
-                      {/* Client name with hover movement effect */}
-                      <div className="overflow-hidden mb-1 sm:mb-2">
-                        <h3 className="font-switzer font-bold text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#FFD700] leading-tight tracking-tight transform group-hover:translate-x-2 transition-transform duration-300">
-                          {project.client}
-                        </h3>
-                      </div>
-
-                      {/* Title with hover movement effect */}
-                      <div className="overflow-hidden mb-4 sm:mb-6 md:mb-8">
-                        <h4 className="font-rubik font-bold text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 tracking-tight transform group-hover:translate-x-2 transition-transform duration-300">
-                          {project.title}
-                        </h4>
-                      </div>
-
-                      {/* Bottom row with year and View Project button */}
-                      <div className="flex justify-between items-center border-t border-white/10 pt-2 xs:pt-3 sm:pt-4 mt-auto">
-                        {/* Year moved to the left */}
-                        <span className="text-white/80 font-rubik text-sm sm:text-base md:text-lg transform group-hover:translate-x-2 transition-transform duration-300">
-                          {project.year}
-                        </span>
-
-                        {/* View Project button as a pill-shaped button with yellow arrow - REMOVED text hover effect */}
-                        <div className="gradient-border-container rounded-full">
-                          <a
-                            href={project.slug}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-[#111111] hover:bg-[#222222] text-white rounded-full py-1 xs:py-1.5 sm:py-2 px-2 xs:px-3 sm:px-4 flex items-center gap-1 xs:gap-1.5 sm:gap-2 transition-colors duration-300 group/button"
-                            onClick={(e) => {
-                              // Prevent the click from triggering the card's drag behavior
-                              e.stopPropagation()
-                            }}
-                          >
-                            <span className="font-medium text-xs xs:text-sm whitespace-nowrap">View Project</span>
-                            <div className="bg-[#FFD700] rounded-full p-0.5 xs:p-1 flex items-center justify-center group-hover/button:scale-110 transition-transform duration-300">
-                              <ArrowRight
-                                size={windowWidth < 480 ? 8 : windowWidth < 640 ? 10 : 12}
-                                className="text-black"
-                              />
+              <AnimatePresence key={project.id} initial={false}>
+                {(index === currentIndex || index === prevIndex || index === nextIndex) && (
+                  <motion.div
+                    className="absolute group cursor-pointer"
+                    initial={false}
+                    animate={getCardStyle(index)}
+                    transition={{
+                      x: smoothTransition,
+                      ...fadeTransition,
+                    }}
+                    style={{
+                      width: getCardWidth(),
+                      willChange: "transform, opacity",
+                    }}
+                  >
+                    {/* Card with enhanced styling and gradient border */}
+                    <div className="overflow-hidden rounded-2xl sm:rounded-3xl flex flex-col relative h-full">
+                      {/* Gradient border */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/10 to-transparent rounded-2xl sm:rounded-3xl p-[1px]"></div>
+                      <div className="relative z-10 flex flex-col w-full h-full bg-[#111111] rounded-2xl sm:rounded-3xl overflow-hidden">
+                        {/* Project Image - Instagram aspect ratio (4:5) */}
+                        <div
+                          className="w-full rounded-t-2xl sm:rounded-t-3xl relative overflow-hidden transition-all duration-500"
+                          style={{
+                            height: getImageHeight(),
+                            background: project.image
+                              ? "transparent"
+                              : "linear-gradient(135deg, #111111 0%, #333333 100%)",
+                          }}
+                        >
+                          {project.image ? (
+                            <Image
+                              src={project.image || "/placeholder.svg"}
+                              alt={project.client}
+                              fill
+                              className="object-cover rounded-t-2xl sm:rounded-t-3xl"
+                              sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw`}
+                              // Add loading priority for current card
+                              priority={index === currentIndex}
+                              // Use lower quality on mobile for better performance
+                              quality={isMobile ? 75 : 90}
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-white/30 text-base sm:text-lg font-rubik">Project Preview</span>
                             </div>
-                          </a>
+                          )}
+
+                          {/* Category badge */}
+                          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-black/70 backdrop-blur-sm px-2 sm:px-3 py-1 rounded-full">
+                            <span className="text-white text-xs font-rubik">{project.category}</span>
+                          </div>
+                        </div>
+
+                        {/* Text content area with simplified hover effects */}
+                        <div className="px-3 xs:px-4 sm:px-6 md:px-8 py-3 xs:py-4 sm:py-6 bg-[#111111] flex-grow flex flex-col">
+                          {/* Client name with hover movement effect */}
+                          <div className="overflow-hidden mb-1 sm:mb-2">
+                            <h3 className="font-switzer font-bold text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#FFD700] leading-tight tracking-tight transform group-hover:translate-x-2 transition-transform duration-300">
+                              {project.client}
+                            </h3>
+                          </div>
+
+                          {/* Title with hover movement effect */}
+                          <div className="overflow-hidden mb-4 sm:mb-6 md:mb-8">
+                            <h4 className="font-rubik font-bold text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 tracking-tight transform group-hover:translate-x-2 transition-transform duration-300">
+                              {project.title}
+                            </h4>
+                          </div>
+
+                          {/* Bottom row with year and View Project button */}
+                          <div className="flex justify-between items-center border-t border-white/10 pt-2 xs:pt-3 sm:pt-4 mt-auto">
+                            {/* Year moved to the left */}
+                            <span className="text-white/80 font-rubik text-sm sm:text-base md:text-lg transform group-hover:translate-x-2 transition-transform duration-300">
+                              {project.year}
+                            </span>
+
+                            {/* View Project button as a pill-shaped button with yellow arrow */}
+                            {project.slug && (
+                              <div className="gradient-border-container rounded-full">
+                                <a
+                                  href={project.slug}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-[#111111] hover:bg-[#222222] text-white rounded-full py-1 xs:py-1.5 sm:py-2 px-2 xs:px-3 sm:px-4 flex items-center gap-1 xs:gap-1.5 sm:gap-2 transition-colors duration-300 group/button"
+                                  onClick={(e) => {
+                                    // Prevent the click from triggering the card's drag behavior
+                                    e.stopPropagation()
+                                  }}
+                                >
+                                  <span className="font-medium text-xs xs:text-sm whitespace-nowrap">View Project</span>
+                                  <div className="bg-[#FFD700] rounded-full p-0.5 xs:p-1 flex items-center justify-center group-hover/button:scale-110 transition-transform duration-300">
+                                    <ArrowRight
+                                      size={windowWidth < 480 ? 8 : windowWidth < 640 ? 10 : 12}
+                                      className="text-black"
+                                    />
+                                  </div>
+                                </a>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             ))}
           </div>
         </div>
@@ -442,8 +454,8 @@ const DiscoverWork: React.FC = () => {
             className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] transition-colors ${
               isAnimating ? "opacity-50 cursor-not-allowed" : "hover:bg-[#FFD700] hover:text-black cursor-pointer"
             }`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={isMobile ? {} : { scale: 1.1 }}
+            whileTap={isMobile ? {} : { scale: 0.95 }}
             disabled={isAnimating}
             aria-label="Previous project"
           >
@@ -454,48 +466,13 @@ const DiscoverWork: React.FC = () => {
             className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#FFD700] flex items-center justify-center text-[#FFD700] transition-colors ${
               isAnimating ? "opacity-50 cursor-not-allowed" : "hover:bg-[#FFD700] hover:text-black cursor-pointer"
             }`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={isMobile ? {} : { scale: 1.1 }}
+            whileTap={isMobile ? {} : { scale: 0.95 }}
             disabled={isAnimating}
             aria-label="Next project"
           >
             <ChevronRight size={24} />
           </motion.button>
-        </div>
-      </div>
-
-      {/* View All Projects Button */}
-      <div className="section-container">
-        <div className="flex justify-center mt-6 sm:mt-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            {/* Gradient border container - Commented out to remove unused button
-            <div className="gradient-border-container rounded-full">
-              <button
-                className="bg-[#1a1a1a] text-white rounded-full py-3 sm:py-4 md:py-5 px-6 sm:px-8 md:px-10 flex items-center gap-2 sm:gap-3 md:gap-4 hover:bg-[#2a2a2a] transition-colors text-base sm:text-lg md:text-xl group"
-                onClick={() => {
-                  const heroSection = document.getElementById("hero")
-                  if (heroSection) {
-                    heroSection.scrollIntoView({ behavior: "smooth" })
-                  }
-                }}
-              >
-                <span className="font-semibold tracking-wider transform group-hover:translate-x-2 transition-transform duration-300">
-                  SEE &apos;EM ALL
-                </span>
-                <div className="bg-[#FFD700] rounded-full p-1 sm:p-1.5 md:p-2 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <ArrowRight
-                    size={windowWidth < 640 ? 16 : 20}
-                    className="text-black group-hover:translate-x-1 transition-transform duration-300"
-                  />
-                </div>
-              </button>
-            </div> */}
-          </motion.div>
         </div>
       </div>
     </section>
