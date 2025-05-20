@@ -275,13 +275,18 @@ const HeroSection = () => {
                 onClick={() => {
                   const contactSection = document.getElementById("contact")
                   if (contactSection) {
-                    // Add a small delay to ensure proper scrolling on mobile
+                    // Add a longer delay for mobile devices to ensure proper scrolling
                     setTimeout(() => {
                       contactSection.scrollIntoView({
                         behavior: "smooth",
                         block: "start",
                       })
                     }, 100)
+
+                    // Log for debugging
+                    console.log("Scrolling to contact section")
+                  } else {
+                    console.error("Contact section not found")
                   }
                 }}
                 whileHover={{ scale: 1.02 }}

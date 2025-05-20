@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { GraduationCap, Briefcase, Calendar, ChevronDown, Building, Award } from "lucide-react"
 import ShinyText from "../shared/ShinyText"
 
-
 // Education data
 const educationData = [
   {
@@ -222,8 +221,9 @@ const EducationCareerSection = () => {
     )
   }
 
+  // Make sure the section has the correct ID
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
+    <section id="education-career" className="py-12 sm:py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
       <div className="max-w-[90%] sm:max-w-[85%] md:max-w-4xl mx-auto px-4 sm:px-6">
         {/* Section header - Responsive heading */}
         {/* Centered Section Header with ShinyText effect */}

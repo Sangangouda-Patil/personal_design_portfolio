@@ -24,9 +24,38 @@ const AboutSection = () => {
   // Handle CV button click with smooth scroll to EducationCareerSection
   const handleCVButtonClick = (e: React.MouseEvent) => {
     e.preventDefault()
+
+    // Get the education-career section by ID
     const educationCareerSection = document.getElementById("education-career")
+
     if (educationCareerSection) {
-      educationCareerSection.scrollIntoView({ behavior: "smooth" })
+      // Add a delay to ensure proper scrolling on mobile
+      setTimeout(() => {
+        educationCareerSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        })
+        console.log("Scrolling to education career section")
+      }, 100)
+    } else {
+      console.error("Education career section not found by ID")
+
+      // Fallback: try to find the section by its class structure
+      const fallbackSection = document.querySelector(
+        "section.py-12.sm\\:py-16.md\\:py-20.bg-\\[\\#0a0a0a\\].overflow-hidden",
+      )
+
+      if (fallbackSection) {
+        console.log("Found education career section by class selector")
+        setTimeout(() => {
+          fallbackSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          })
+        }, 100)
+      } else {
+        console.error("Could not find education career section by any method")
+      }
     }
   }
 

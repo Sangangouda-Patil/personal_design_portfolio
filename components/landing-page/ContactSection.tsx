@@ -90,7 +90,7 @@ const ContactSection = () => {
                 onClick={navigateToContactForm}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-switzer-extrabold text-white pr-2 sm:pr-4">
-                  Grab a ☕️ & Let&apos;s Discuss 
+                  Grab a ☕️ & Let&apos;s Discuss
                 </h3>
                 <span className="text-white text-lg sm:text-xl">→</span>
               </motion.div>
@@ -112,7 +112,7 @@ const ContactSection = () => {
                 onMouseLeave={() => setIsSayHelloHovered(false)}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-switzer-extrabold text-white flex items-center">
-                  Say Hello <span className="ml-2">👋</span> 
+                  Say Hello <span className="ml-2">👋</span>
                 </h3>
 
                 {/* Conditional rendering of arrow or WhatsApp icon */}
