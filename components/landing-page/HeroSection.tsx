@@ -326,11 +326,11 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="text-gray-300 mt-8 xs:mt-10 sm:mt-12 md:mt-14 lg:mt-16 max-w-xs xs:max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl text-center text-sm xs:text-base sm:text-lg md:text-xl z-20 relative font-switzer-regular"
+          className="text-gray-300 mt-8 xs:mt-10 sm:mt-12 md:mt-14 lg:mt-16 max-w-xs xs:max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl text-center text-sm xs:text-base sm:text-lg md:text-xl z-20 relative font-switzer-bold"
           style={{ opacity: 0.6 }}
         >
           I create sharp, stylish designs and websites that connect, convert, and add just the right amount of{" "}
-          <span className="font-switzer-bold whitespace-nowrap" style={{ color: "#f6cc0b", opacity: 0.8 }}>
+          <span className="font-switzer-bold whitespace-nowrap" style={{ color: "#f6cc0b" }}>
             {" "}
             &apos;wow&apos;{" "}
           </span>{" "}

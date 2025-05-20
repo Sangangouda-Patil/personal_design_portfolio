@@ -634,5 +634,5 @@ section[id] {
 
 /* Ensure the contact section is always visible */
 #contact {
-  min-height: 50vh;
+  min-height: 20vh;
 }
