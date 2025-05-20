@@ -99,7 +99,7 @@ const BlurText: React.FC<BlurTextProps> = ({
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots)
 
-        const spanTransition = {
+        const spanTransition: any = {
           duration: totalDuration,
           times,
           delay: (index * delay) / 1000,
@@ -275,7 +275,13 @@ const HeroSection = () => {
                 onClick={() => {
                   const contactSection = document.getElementById("contact")
                   if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: "smooth" })
+                    // Add a small delay to ensure proper scrolling on mobile
+                    setTimeout(() => {
+                      contactSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      })
+                    }, 100)
                   }
                 }}
                 whileHover={{ scale: 1.02 }}
