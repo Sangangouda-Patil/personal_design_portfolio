@@ -207,75 +207,97 @@ const HeroSection = () => {
   }, [rotatingWords.length])
 
   // Improved function to handle contact button click
-  const handleContactButtonClick = () => {
+  const handleContactButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault()
     debugLog("Contact button clicked")
 
-    // First, try to find the contact section by ID
-    const contactSection = document.getElementById("contact")
+    // Try multiple methods to find the contact section
+    const findContactSection = () => {
+      // Method 1: Direct ID lookup
+      const byId = document.getElementById("contact")
+      if (byId) {
+        debugLog("Found contact section by ID")
+        return byId
+      }
+
+      // Method 2: Query selector for section with contact ID
+      const bySelector = document.querySelector("section#contact")
+      if (bySelector) {
+        debugLog("Found contact section by selector")
+        return bySelector
+      }
+
+      // Method 3: Find by class name pattern that might be unique to the contact section
+      const byClass = document.querySelector("section.py-12.sm\\:py-16.bg-\\[\\#0a0a0a\\]")
+      if (byClass) {
+        debugLog("Found contact section by class pattern")
+        // Add ID if missing for future reference
+        if (!byClass.id) byClass.id = "contact"
+        return byClass
+      }
+
+      // Method 4: Last resort - find ContactSection component
+      const allSections = document.querySelectorAll("section")
+      const lastSection = allSections[allSections.length - 1]
+      if (lastSection) {
+        debugLog("Using last section as fallback")
+        // Add ID if missing for future reference
+        if (!lastSection.id) lastSection.id = "contact"
+        return lastSection
+      }
+
+      return null
+    }
+
+    const contactSection = findContactSection()
 
     if (contactSection) {
-      debugLog("Found contact section by ID")
+      // Add visual indicator for debugging (will be removed after scrolling)
+      const indicator = document.createElement("div")
+      indicator.style.position = "absolute"
+      indicator.style.left = "0"
+      indicator.style.right = "0"
+      indicator.style.height = "5px"
+      indicator.style.backgroundColor = "red"
+      indicator.style.zIndex = "9999"
+      contactSection.prepend(indicator)
 
-      // Add a longer delay for mobile devices to ensure proper scrolling
+      // Try different scrolling methods with a delay for mobile
       setTimeout(() => {
+        // Method 1: scrollIntoView
         try {
           contactSection.scrollIntoView({
             behavior: "smooth",
             block: "start",
           })
-          debugLog("Scrolling to contact section")
+          debugLog("Scrolling with scrollIntoView")
         } catch (error) {
-          debugLog("Error scrolling to contact section", error)
-        }
-      }, 100)
-    } else {
-      debugLog("Contact section not found by ID")
+          debugLog("Error with scrollIntoView", error)
 
-      // Fallback: try to find the section by its class structure
-      const fallbackContactSection = document.querySelector("section#contact, section[id='contact']")
-
-      if (fallbackContactSection) {
-        debugLog("Found contact section by selector")
-
-        // If found, add ID if missing and scroll to it
-        if (!fallbackContactSection.id) {
-          fallbackContactSection.id = "contact"
-          debugLog("Added ID to contact section")
-        }
-
-        setTimeout(() => {
+          // Method 2: window.scrollTo
           try {
-            fallbackContactSection.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            })
-            debugLog("Scrolling to contact section (fallback)")
-          } catch (error) {
-            debugLog("Error scrolling to contact section (fallback)", error)
-          }
-        }, 100)
-      } else {
-        // Last resort: try to find any section that might be the contact section
-        debugLog("Trying last resort to find contact section")
-        const lastSection = document.querySelector("section:last-of-type")
+            const rect = contactSection.getBoundingClientRect()
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+            const targetY = rect.top + scrollTop
 
-        if (lastSection) {
-          debugLog("Using last section as fallback")
-          setTimeout(() => {
-            try {
-              lastSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              })
-              debugLog("Scrolling to last section as fallback")
-            } catch (error) {
-              debugLog("Error scrolling to last section", error)
-            }
-          }, 100)
-        } else {
-          debugLog("Could not find any suitable section to scroll to")
+            window.scrollTo({
+              top: targetY,
+              behavior: "smooth",
+            })
+            debugLog("Scrolling with window.scrollTo", { targetY })
+          } catch (error) {
+            debugLog("Error with window.scrollTo", error)
+          }
         }
-      }
+
+        // Remove the indicator after scrolling
+        setTimeout(() => {
+          indicator.remove()
+        }, 2000)
+      }, 100) // 100ms delay for mobile
+    } else {
+      console.error("Could not find contact section by any method")
+      debugLog("Could not find contact section by any method")
     }
   }
 

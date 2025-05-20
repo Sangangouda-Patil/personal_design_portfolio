@@ -112,7 +112,7 @@ const ContactSection = () => {
                 onMouseLeave={() => setIsSayHelloHovered(false)}
               >
                 <h3 className="text-sm sm:text-base md:text-lg font-switzer-extrabold text-white flex items-center">
-                  Say Hello <span className="ml-2">👋</span>
+                  Say Hello On WhatsApp<span className="ml-2"> 👋 </span>
                 </h3>
 
                 {/* Conditional rendering of arrow or WhatsApp icon */}
