@@ -188,8 +188,8 @@ const HeroSection = () => {
   const rotatingWords = [
     "SOFTWARE ENGINEER",
     "VISUAL DESIGNER",
-    "UI/UX SPECIALIST",
-    "CREATIVE DEVELOPER",
+    "UI/UX DESIGNER",
+    "WEB DEVELOPER",
     "PROBLEM SOLVER",
   ]
 
