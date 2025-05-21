@@ -116,9 +116,9 @@ const AboutSection = () => {
                         👆
                       </span>
                     </p>
-                    <p className="font-times italic text-gray-400 text-xs xs:text-sm text-sm xs:text-base sm:text-lg md:text-xl">
+                    {/* <p className="font-times italic text-gray-400 text-xs xs:text-sm text-sm xs:text-base sm:text-lg md:text-xl">
                       in a colored photo from 2025
-                    </p>
+                    </p> */}
                   </div>
                 </motion.div>
               </div>
