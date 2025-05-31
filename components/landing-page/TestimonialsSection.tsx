@@ -11,26 +11,51 @@ const testimonials = [
   {
     id: 1,
     quote:
-      "Joining Creatorthan changed everything for me. My passion turned into a brand, and now I collaborate with businesses I once admired.",
-    name: "Tiana Press",
-    title: "Digital Creator",
-    avatar: "/testimonials/img1.webp",
+      "Working with Sangangouda was an absolute delight! He truly understood our brand vision and gave it a vibrant, modern look. His creativity and command over tools like Photoshop and Canva really stood out. Our festival campaign posters had that perfect design-meets-modern feel just what we needed!",
+    shortQuote:
+      "Working with Sangangouda was an absolute delight! His creativity and command over design tools really stood out.",
+    name: "Grifith",
+    title: "CEO Habanero",
+    avatar: "/testimonials/img4.webp",
   },
   {
     id: 2,
     quote:
-      "The designs delivered exceeded my expectations. Our conversion rate increased by 40% after implementing the new user interface.",
-    name: "Rafael Lee",
-    title: "Startup Founder",
-    avatar: "/testimonials/img2.webp",
+      "Sangangouda crafted a clean and cohesive design system for Creatorships, including intuitive dashboards and a user-friendly platform experience. His work truly reflects what creatorships need simplicity, clarity, and style.",
+    shortQuote:
+      "Sangangouda crafted a clean design system with intuitive dashboards. His work reflects simplicity and style.",
+    name: "Deepak B",
+    title: "Founder Creatorhips",
+    avatar: "/testimonials/img3.webp",
   },
   {
     id: 3,
     quote:
-      "Working with this team has been transformative for our brand. The attention to detail and creative solutions set us apart from competitors.",
-    name: "Sophie Chen",
-    title: "Marketing Director",
-    avatar: "/testimonials/img3.webp",
+      "Amazing work delivered with clear communication and dedication! Sangangouda truly impressed me, and I'll be definitely working with him again.",
+    shortQuote: "Amazing work with clear communication! Sangangouda truly impressed me.",
+    name: "Sanjana",
+    title: "Manager at Imaginext ",
+    avatar: "/testimonials/img5.webp",
+  },
+  {
+    id: 4,
+    quote:
+      "Sangangouda's design sense is sharp and purposeful. At Alphanumero, we collaborated on multiple campaigns, and his visuals always elevated the copy. He understands how to create designs that not only look good but communicate clearly.",
+    shortQuote:
+      "Sangangouda's design sense is sharp. His visuals always elevated our campaigns and communicate clearly.",
+    name: "Shivangi",
+    title: "Senior Copywriter at Alphanumero ",
+    avatar: "/testimonials/img6.webp",
+  },
+  {
+    id: 5,
+    quote:
+      "Sangangouda's designs have that extra 'tadka' of originality! From social media creatives to our Vaccine Awareness promotional banners, every design he delivered was on point and full of life. His understanding of color and typography is simply top-notch.",
+    shortQuote:
+      "Sangangouda's designs have that extra 'tadka' of originality! Every design was on point and full of life.",
+    name: "Adithya",
+    title: "Senior Product Manager at BabyMd ",
+    avatar: "/testimonials/img1.webp",
   },
 ]
 
@@ -52,6 +77,7 @@ const TestimonialsSection = () => {
   const [isAnimating, setIsAnimating] = useState(false)
   // Ref for auto-rotation timer
   const autoRotateInterval = useRef<NodeJS.Timeout | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Navigation functions with direction tracking and debouncing
   const nextSlide = useCallback(() => {
@@ -101,6 +127,17 @@ const TestimonialsSection = () => {
       }
     }
   }, [nextSlide, isAnimating])
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+
+    checkIsMobile()
+    window.addEventListener("resize", checkIsMobile)
+
+    return () => window.removeEventListener("resize", checkIsMobile)
+  }, [])
 
   // Helper function to get index with wrapping
   const getWrappedIndex = useCallback((index: number) => {
@@ -256,7 +293,7 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Mobile Testimonials (Single Card View) */}
-        <div className="md:hidden mb-8 relative min-h-[300px]">
+        <div className="md:hidden mb-8 relative min-h-[250px] sm:min-h-[280px]">
           <AnimatePresence initial={false} mode="wait" custom={direction}>
             <motion.div
               key={`mobile-${currentIndex}`}
@@ -270,16 +307,16 @@ const TestimonialsSection = () => {
             >
               {/* Gradient border container */}
               <div className="gradient-border-container rounded-3xl p-[2px]">
-                <div className="bg-[#111111] rounded-3xl p-6 h-full relative">
-                  <p className="font-switzer-medium italic text-white text-base mb-12">
-                    &quot;{testimonials[currentIndex].quote}&quot;
+                <div className="bg-[#111111] rounded-3xl p-4 sm:p-6 h-full relative">
+                  <p className="font-switzer-medium text-white text-sm sm:text-base mb-8 sm:mb-12 leading-relaxed">
+                    &quot;{isMobile ? testimonials[currentIndex].shortQuote : testimonials[currentIndex].quote}&quot;
                   </p>
 
                   {/* Bottom section with avatar and info */}
                   <div className="flex items-center mt-4 mb-2">
                     {/* Avatar container */}
                     <motion.div
-                      className="w-24 h-24 mr-4 flex-shrink-0 drop-shadow-xl"
+                      className="w-16 h-16 sm:w-20 sm:h-20 mr-3 sm:mr-4 flex-shrink-0 drop-shadow-xl"
                       whileHover="hover"
                       variants={avatarVariants}
                       style={{ perspective: 1000 }}
@@ -297,8 +334,12 @@ const TestimonialsSection = () => {
 
                     {/* Name and title */}
                     <div>
-                      <h4 className="font-switzer-medium text-white">{testimonials[currentIndex].name}</h4>
-                      <p className="font-switzer-medium text-gray-400 text-sm">{testimonials[currentIndex].title}</p>
+                      <h4 className="font-switzer-medium text-white text-sm sm:text-base">
+                        {testimonials[currentIndex].name}
+                      </h4>
+                      <p className="font-switzer-medium text-gray-400 text-xs sm:text-sm">
+                        {testimonials[currentIndex].title}
+                      </p>
                     </div>
                   </div>
                 </div>
