@@ -223,7 +223,7 @@ const ContactSection = () => {
                   </Link>
 
                   {/* LinkedIn */}
-                  <Link href="https://www.linkedin.com/in/sangangouda-patil/" target="_blank" aria-label="LinkedIn">
+                  <Link href="https://www.linkedin.com/in/sangangoudapatil/" target="_blank" aria-label="LinkedIn">
                     <motion.div
                       whileHover={{ scale: 1.15, y: -3 }}
                       whileTap={{ scale: 0.95 }}
